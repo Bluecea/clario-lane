@@ -14,7 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardDashboardLayoutRouteImport } from './routes/dashboard/_dashboardLayout'
 import { Route as DashboardDashboardLayoutPracticeRouteImport } from './routes/dashboard/_dashboardLayout/practice'
-import { Route as DashboardDashboardLayoutOverviewRouteImport } from './routes/dashboard/_dashboardLayout'
+import { Route as DashboardDashboardLayoutOverviewRouteImport } from './routes/dashboard/_dashboardLayout/overview'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',

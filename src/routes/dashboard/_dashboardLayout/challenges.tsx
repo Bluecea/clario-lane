@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Card,
   CardContent,
@@ -10,8 +11,13 @@ import {
 } from "@/components";
 
 import { Trophy, Users, Clock, Target, Medal, Crown, Star } from "lucide-react";
+import { motion } from "motion/react";
 
-export function ChallengesTab() {
+export const Route = createFileRoute("/dashboard/_dashboardLayout/challenges")({
+  component: RouteComponent,
+});
+
+export function RouteComponent() {
   const leaderboard = [
     {
       rank: 1,
@@ -101,7 +107,13 @@ export function ChallengesTab() {
   ];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -40, opacity: 0 }}
+      transition={{ type: "spring" }}
+      className="space-y-6"
+    >
       {/* Leaderboard */}
       <Card>
         <CardHeader>
@@ -316,6 +328,6 @@ export function ChallengesTab() {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

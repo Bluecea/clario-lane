@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Card,
@@ -7,10 +8,13 @@ import {
   ReadingExercise,
 } from "@/components";
 import { BookOpen, Brain, Eye, Zap, Clock, Target, Play } from "lucide-react";
+import { motion } from "motion/react";
 
-// import { useOnboardingStore } from "@/store";
+export const Route = createFileRoute("/dashboard/_dashboardLayout/practice")({
+  component: RouteComponent,
+});
 
-export function PracticeTab() {
+export function RouteComponent() {
   // const userProfile = useOnboardingStore();
   const [activeExercise, setActiveExercise] = useState<string | null>(null);
 
@@ -104,7 +108,13 @@ export function PracticeTab() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -40, opacity: 0 }}
+      transition={{ type: "spring" }}
+      className="space-y-6"
+    >
       {/* Daily Challenge */}
       <Card className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white border-0">
         <CardContent className="pt-6">
@@ -233,6 +243,6 @@ export function PracticeTab() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </motion.div>
   );
 }

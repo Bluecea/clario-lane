@@ -24,10 +24,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useOnboardingStore } from "@/store";
+import { useUserProfileStore } from "@/store";
+import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "motion/react";
 
-export function OverviewTab() {
-  const userProfile = useOnboardingStore();
+export const Route = createFileRoute("/dashboard/_dashboardLayout/")({
+  component: RouteComponent,
+});
+
+export function RouteComponent() {
+  const userProfile = useUserProfileStore();
+
+  console.log({ userProfile });
 
   // Mock data for the chart
   const progressData = [
@@ -60,16 +68,23 @@ export function OverviewTab() {
   ];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -40, opacity: 0 }}
+      transition={{ type: "spring" }}
+      className="space-y-6"
+      key="overview"
+    >
       {/* Quick Stats */}
       <div className="grid md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Current Speed</span>
+              <span className=" text-sm">Current Speed</span>
               <TrendingUp className="w-4 h-4 text-green-600" />
             </div>
-            <div className="text-2xl text-indigo-900 mb-1">
+            <div className="text-2xl text-primary mb-1">
               {userProfile.currentWPM} WPM
             </div>
             <div className="flex items-center gap-1 text-sm text-green-600">
@@ -82,40 +97,38 @@ export function OverviewTab() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Comprehension</span>
+              <span className=" text-sm">Comprehension</span>
               <CheckCircle2 className="w-4 h-4 text-blue-600" />
             </div>
-            <div className="text-2xl text-indigo-900 mb-1">
+            <div className="text-2xl text-primary mb-1">
               {userProfile.currentComprehensionScore}%
             </div>
-            <div className="text-sm text-gray-600">Excellent retention</div>
+            <div className="text-sm ">Excellent retention</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Total Sessions</span>
+              <span className=" text-sm">Total Sessions</span>
               <Calendar className="w-4 h-4 text-purple-600" />
             </div>
-            <div className="text-2xl text-indigo-900 mb-1">
+            <div className="text-2xl text-primary mb-1">
               {userProfile.totalSessions}
             </div>
-            <div className="text-sm text-gray-600">Keep it up!</div>
+            <div className="text-sm ">Keep it up!</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Goal Progress</span>
+              <span className=" text-sm">Goal Progress</span>
               <Target className="w-4 h-4 text-orange-600" />
             </div>
-            <div className="text-2xl text-indigo-900 mb-1">
-              {progressPercent}%
-            </div>
-            <div className="text-sm text-gray-600">
-              {goalWPM - userProfile.currentWPM!} WPM to go
+            <div className="text-2xl text-primary mb-1">{progressPercent}%</div>
+            <div className="text-sm ">
+              {goalWPM - userProfile.currentWPM} WPM to go
             </div>
           </CardContent>
         </Card>
@@ -211,29 +224,29 @@ export function OverviewTab() {
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-600">Starting Point</span>
+                  <span className="text-sm ">Starting Point</span>
                   <span className="text-sm text-gray-900">
                     {userProfile.baseLineWPM} WPM
                   </span>
                 </div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm text-gray-600">Current Speed</span>
+                  <span className="text-sm ">Current Speed</span>
                   <span className="text-sm text-indigo-600">
                     {userProfile.currentWPM} WPM
                   </span>
                 </div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-sm text-gray-600">30-Day Goal</span>
+                  <span className="text-sm ">30-Day Goal</span>
                   <span className="text-sm text-gray-900">{goalWPM} WPM</span>
                 </div>
                 <Progress value={progressPercent} className="h-3" />
-                <p className="text-sm text-gray-600 mt-2 text-center">
+                <p className="text-sm  mt-2 text-center">
                   {progressPercent}% complete
                 </p>
               </div>
 
               <div className="bg-indigo-50 p-4 rounded-lg">
-                <h3 className="mb-2 text-indigo-900">On Track!</h3>
+                <h3 className="mb-2 text-primary">On Track!</h3>
                 <p className="text-sm text-gray-700">
                   You're making great progress. At this rate, you'll hit your
                   goal in {Math.round(30 * (1 - progressPercent / 100))} days.
@@ -245,25 +258,25 @@ export function OverviewTab() {
                   <div className="text-lg text-indigo-600">
                     {userProfile.streakDays}
                   </div>
-                  <div className="text-xs text-gray-600">Day Streak</div>
+                  <div className="text-xs ">Day Streak</div>
                 </div>
                 <div className="bg-white p-3 rounded-lg border">
                   <div className="text-lg text-indigo-600">
                     {userProfile.badges?.length || 0}
                   </div>
-                  <div className="text-xs text-gray-600">Badges</div>
+                  <div className="text-xs ">Badges</div>
                 </div>
                 <div className="bg-white p-3 rounded-lg border">
                   <div className="text-lg text-indigo-600">
                     {userProfile.level}
                   </div>
-                  <div className="text-xs text-gray-600">Level</div>
+                  <div className="text-xs ">Level</div>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </motion.div>
   );
 }

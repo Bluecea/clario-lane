@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, Badge } from "@/components";
 import {
   Award,
@@ -20,10 +21,15 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { useOnboardingStore } from "@/store";
+import { useUserProfileStore } from "@/store";
+import { motion } from "motion/react";
 
-export function ProgressTab() {
-  const userProfile = useOnboardingStore();
+export const Route = createFileRoute("/dashboard/_dashboardLayout/progress")({
+  component: RouteComponent,
+});
+
+export function RouteComponent() {
+  const userProfile = useUserProfileStore();
 
   // Mock data for charts
   const weeklyProgress = [
@@ -116,7 +122,13 @@ export function ProgressTab() {
   ];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -40, opacity: 0 }}
+      transition={{ type: "spring" }}
+      className="space-y-6"
+    >
       {/* Stats Overview */}
       <div className="grid md:grid-cols-4 gap-4">
         <Card>
@@ -145,7 +157,7 @@ export function ProgressTab() {
               <span className="text-sm text-gray-600">Sessions</span>
             </div>
             <div className="text-2xl text-indigo-900">
-              {userProfile.totalSessions}
+              {"userProfile.totalSessions"}
             </div>
             <p className="text-sm text-gray-600 mt-1">total completed</p>
           </CardContent>
@@ -364,6 +376,6 @@ export function ProgressTab() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </motion.div>
   );
 }

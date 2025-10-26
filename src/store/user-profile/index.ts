@@ -16,11 +16,13 @@ export type UserProfileType = {
   weeklyProgress: boolean;
   streakDays?: number;
   xpEarned?: number;
-  currentWPM?: number;
+  currentWPM: number;
   level?: number;
   baselineComprehension?: number;
   currentComprehension?: number;
   onboardingComplete: boolean;
+  totalSessions?: number;
+  progress?: number;
 };
 
 export type UserProfileStoreActions = {
@@ -48,6 +50,8 @@ export const initialUserProfile: UserProfileType = {
   baselineComprehension: 0,
   currentComprehension: 0,
   onboardingComplete: false,
+  totalSessions: 0,
+  progress: 0,
 };
 
 export const useUserProfileStore = create<

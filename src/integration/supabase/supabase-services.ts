@@ -116,7 +116,7 @@ class SupabaseService {
         weeklyProgress: store.weeklyProgress,
         streakDays: store.streakDays,
         xpEarned: store.xpEarned,
-        currentWPM: store.currentWPM,
+        currentWPM: store.baseLineWPM,
         level: store.level,
         baselineComprehension: store.baselineComprehension,
         currentComprehension: store.currentComprehension,
