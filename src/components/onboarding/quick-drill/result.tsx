@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  ConfettiComponent,
   NotificationSetup,
   Spinner,
 } from "@/components";
@@ -60,6 +61,8 @@ export function Result({ improvement, onComplete }: Props) {
         {isSubmitting ? <Spinner /> : null}
         Continue to Dashboard
       </Button>
+
+      <ConfettiComponent particleCount={improvement} />
     </motion.div>
   );
 }

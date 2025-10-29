@@ -1,6 +1,6 @@
 import { Award, Sparkles, Target, TrendingUp, Zap } from "lucide-react";
 import { motion } from "motion/react";
-import { Button, Card, MetricCard } from "@/components";
+import { Button, Card, ConfettiComponent, MetricCard } from "@/components";
 import { useOnboardingStore } from "@/store";
 
 export function Results() {
@@ -108,6 +108,14 @@ export function Results() {
           </Button>
         </motion.div>
       </Card>
+
+      <ConfettiComponent
+        particleCount={
+          onboarding.currentComprehensionScore ||
+          onboarding.currentComprehension ||
+          1
+        }
+      />
     </div>
   );
 }
