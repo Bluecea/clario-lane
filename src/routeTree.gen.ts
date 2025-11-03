@@ -11,10 +11,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardingOnboardingLayoutRouteImport } from './routes/onboarding/_onboardingLayout'
 import { Route as DashboardDashboardLayoutRouteImport } from './routes/dashboard/_dashboardLayout'
+import { Route as OnboardingOnboardingLayoutIndexRouteImport } from './routes/onboarding/_onboardingLayout/index'
 import { Route as DashboardDashboardLayoutIndexRouteImport } from './routes/dashboard/_dashboardLayout/index'
 import { Route as DashboardDashboardLayoutProgressRouteImport } from './routes/dashboard/_dashboardLayout/progress'
 import { Route as DashboardDashboardLayoutChallengesRouteImport } from './routes/dashboard/_dashboardLayout/challenges'
@@ -22,19 +23,20 @@ import { Route as DashboardDashboardLayoutPracticePracticeLayoutRouteImport } fr
 import { Route as DashboardDashboardLayoutPracticePracticeLayoutIndexRouteImport } from './routes/dashboard/_dashboardLayout/practice/_practice-layout/index'
 import { Route as DashboardDashboardLayoutPracticePracticeLayoutSpeedreadingRouteImport } from './routes/dashboard/_dashboardLayout/practice/_practice-layout/speedreading'
 
+const OnboardingRouteImport = createFileRoute('/onboarding')()
 const DashboardRouteImport = createFileRoute('/dashboard')()
 const DashboardDashboardLayoutPracticeRouteImport = createFileRoute(
   '/dashboard/_dashboardLayout/practice',
 )()
 
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -47,6 +49,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingOnboardingLayoutRoute =
+  OnboardingOnboardingLayoutRouteImport.update({
+    id: '/_onboardingLayout',
+    getParentRoute: () => OnboardingRoute,
+  } as any)
 const DashboardDashboardLayoutRoute =
   DashboardDashboardLayoutRouteImport.update({
     id: '/_dashboardLayout',
@@ -57,6 +64,12 @@ const DashboardDashboardLayoutPracticeRoute =
     id: '/practice',
     path: '/practice',
     getParentRoute: () => DashboardDashboardLayoutRoute,
+  } as any)
+const OnboardingOnboardingLayoutIndexRoute =
+  OnboardingOnboardingLayoutIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => OnboardingOnboardingLayoutRoute,
   } as any)
 const DashboardDashboardLayoutIndexRoute =
   DashboardDashboardLayoutIndexRouteImport.update({
@@ -97,11 +110,12 @@ const DashboardDashboardLayoutPracticePracticeLayoutSpeedreadingRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/dashboard': typeof DashboardDashboardLayoutRouteWithChildren
+  '/onboarding': typeof OnboardingOnboardingLayoutRouteWithChildren
   '/dashboard/challenges': typeof DashboardDashboardLayoutChallengesRoute
   '/dashboard/progress': typeof DashboardDashboardLayoutProgressRoute
   '/dashboard/': typeof DashboardDashboardLayoutIndexRoute
+  '/onboarding/': typeof OnboardingOnboardingLayoutIndexRoute
   '/dashboard/practice': typeof DashboardDashboardLayoutPracticePracticeLayoutRouteWithChildren
   '/dashboard/practice/speedreading': typeof DashboardDashboardLayoutPracticePracticeLayoutSpeedreadingRoute
   '/dashboard/practice/': typeof DashboardDashboardLayoutPracticePracticeLayoutIndexRoute
@@ -109,8 +123,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/dashboard': typeof DashboardDashboardLayoutIndexRoute
+  '/onboarding': typeof OnboardingOnboardingLayoutIndexRoute
   '/dashboard/challenges': typeof DashboardDashboardLayoutChallengesRoute
   '/dashboard/progress': typeof DashboardDashboardLayoutProgressRoute
   '/dashboard/practice': typeof DashboardDashboardLayoutPracticePracticeLayoutIndexRoute
@@ -120,12 +134,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/onboarding': typeof OnboardingRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/_dashboardLayout': typeof DashboardDashboardLayoutRouteWithChildren
+  '/onboarding': typeof OnboardingRouteWithChildren
+  '/onboarding/_onboardingLayout': typeof OnboardingOnboardingLayoutRouteWithChildren
   '/dashboard/_dashboardLayout/challenges': typeof DashboardDashboardLayoutChallengesRoute
   '/dashboard/_dashboardLayout/progress': typeof DashboardDashboardLayoutProgressRoute
   '/dashboard/_dashboardLayout/': typeof DashboardDashboardLayoutIndexRoute
+  '/onboarding/_onboardingLayout/': typeof OnboardingOnboardingLayoutIndexRoute
   '/dashboard/_dashboardLayout/practice': typeof DashboardDashboardLayoutPracticeRouteWithChildren
   '/dashboard/_dashboardLayout/practice/_practice-layout': typeof DashboardDashboardLayoutPracticePracticeLayoutRouteWithChildren
   '/dashboard/_dashboardLayout/practice/_practice-layout/speedreading': typeof DashboardDashboardLayoutPracticePracticeLayoutSpeedreadingRoute
@@ -136,11 +152,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/onboarding'
     | '/dashboard'
+    | '/onboarding'
     | '/dashboard/challenges'
     | '/dashboard/progress'
     | '/dashboard/'
+    | '/onboarding/'
     | '/dashboard/practice'
     | '/dashboard/practice/speedreading'
     | '/dashboard/practice/'
@@ -148,8 +165,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/onboarding'
     | '/dashboard'
+    | '/onboarding'
     | '/dashboard/challenges'
     | '/dashboard/progress'
     | '/dashboard/practice'
@@ -158,12 +175,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
-    | '/onboarding'
     | '/dashboard'
     | '/dashboard/_dashboardLayout'
+    | '/onboarding'
+    | '/onboarding/_onboardingLayout'
     | '/dashboard/_dashboardLayout/challenges'
     | '/dashboard/_dashboardLayout/progress'
     | '/dashboard/_dashboardLayout/'
+    | '/onboarding/_onboardingLayout/'
     | '/dashboard/_dashboardLayout/practice'
     | '/dashboard/_dashboardLayout/practice/_practice-layout'
     | '/dashboard/_dashboardLayout/practice/_practice-layout/speedreading'
@@ -173,24 +192,24 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
-  OnboardingRoute: typeof OnboardingRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  OnboardingRoute: typeof OnboardingRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -207,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/_onboardingLayout': {
+      id: '/onboarding/_onboardingLayout'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingOnboardingLayoutRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
     '/dashboard/_dashboardLayout': {
       id: '/dashboard/_dashboardLayout'
       path: '/dashboard'
@@ -220,6 +246,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/practice'
       preLoaderRoute: typeof DashboardDashboardLayoutPracticeRouteImport
       parentRoute: typeof DashboardDashboardLayoutRoute
+    }
+    '/onboarding/_onboardingLayout/': {
+      id: '/onboarding/_onboardingLayout/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingOnboardingLayoutIndexRouteImport
+      parentRoute: typeof OnboardingOnboardingLayoutRoute
     }
     '/dashboard/_dashboardLayout/': {
       id: '/dashboard/_dashboardLayout/'
@@ -334,11 +367,37 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
+interface OnboardingOnboardingLayoutRouteChildren {
+  OnboardingOnboardingLayoutIndexRoute: typeof OnboardingOnboardingLayoutIndexRoute
+}
+
+const OnboardingOnboardingLayoutRouteChildren: OnboardingOnboardingLayoutRouteChildren =
+  {
+    OnboardingOnboardingLayoutIndexRoute: OnboardingOnboardingLayoutIndexRoute,
+  }
+
+const OnboardingOnboardingLayoutRouteWithChildren =
+  OnboardingOnboardingLayoutRoute._addFileChildren(
+    OnboardingOnboardingLayoutRouteChildren,
+  )
+
+interface OnboardingRouteChildren {
+  OnboardingOnboardingLayoutRoute: typeof OnboardingOnboardingLayoutRouteWithChildren
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingOnboardingLayoutRoute: OnboardingOnboardingLayoutRouteWithChildren,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
-  OnboardingRoute: OnboardingRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  OnboardingRoute: OnboardingRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

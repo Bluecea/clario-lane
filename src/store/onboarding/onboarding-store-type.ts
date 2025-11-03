@@ -8,7 +8,7 @@ export type OnboardingType = {
   goals: string[];
   contentTypes: string[];
   challenges: string[];
-  currentComprehensionScore?: number;
+  currentComprehensionScore: number;
   focusScore?: number;
   dailyReminder: boolean;
   weeklyProgress: boolean;
@@ -17,7 +17,6 @@ export type OnboardingType = {
   currentWPM?: number;
   level?: number;
   baselineComprehension?: number;
-  currentComprehension?: number;
   onboardingComplete: boolean;
   isSubmitting: boolean;
 
@@ -26,6 +25,7 @@ export type OnboardingType = {
   readingTime: number;
   startTime: number;
   totalSessions?: number;
+  totalSteps: number
 
   // readingGoal?: string;
   // dailyTime?: string;

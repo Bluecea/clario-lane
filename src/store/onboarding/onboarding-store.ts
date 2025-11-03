@@ -20,4 +20,6 @@ export const useOnboardingStore = create<
   weeklyProgress: true,
   achievements: true,
   isSubmitting: false,
+  currentComprehensionScore: 0,
+  totalSteps: 7,
 }));

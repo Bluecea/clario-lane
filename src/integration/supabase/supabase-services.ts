@@ -119,7 +119,7 @@ class SupabaseService {
         currentWPM: store.baseLineWPM,
         level: store.level,
         baselineComprehension: store.baselineComprehension,
-        currentComprehension: store.currentComprehension,
+        currentComprehension: store.currentComprehensionScore,
         onboardingComplete: store.onboardingComplete,
       });
 
@@ -143,6 +143,13 @@ class SupabaseService {
       return logServerError(error);
     }
   }
+
+  async initiateSubscription() {
+    this.supabase.functions.invoke('subscription', {
+      
+    })
+  }
+
 }
 
 export const supabaseService = new SupabaseService();
