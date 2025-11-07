@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import PricingCard from '@/components/pricingCard'
 import { Switch } from '..'
-import { useRouteContext } from '@tanstack/react-router'
-import { supabaseService } from '@/integration'
-import PaystackPop from '@paystack/inline-js'
-import type { PlanObject } from '@/lib'
+
+import type { PlanObject } from '@/types'
 
 const features = [
   'Unlimited speed reading exercises',
@@ -15,23 +13,13 @@ const features = [
   'Focus building exercises',
 ]
 
-export default function Billing({ plans }: { plans: PlanObject[] }) {
-  const { session } = useRouteContext({ from: '__root__' })
+type Props = {
+  plans: PlanObject[]
+  onSubscribe: (amount: number, plan: string) => void
+}
+
+export default function Billing({ plans, onSubscribe }: Props) {
   const [interval, setInterval] = useState<'mo' | 'yr'>('mo')
-  const email = session?.user.email || ''
-  const paystackPop = new PaystackPop()
-
-  const handleSubscription = async (amount: number, plan: string) => {
-    const data = await supabaseService.initiateSubscription({
-      email,
-      amount,
-      plan,
-    })
-
-    const res = data.data
-
-    return paystackPop.resumeTransaction(res.access_code)
-  }
 
   return (
     <div className='max-w-2xl mx-auto w-full'>
@@ -70,7 +58,7 @@ export default function Billing({ plans }: { plans: PlanObject[] }) {
             features={features}
             badge={plan.interval}
             ctaLabel='Start'
-            onCta={() => handleSubscription(plan.amount, plan.planCode)}
+            onCta={() => onSubscribe(plan.amount, plan.planCode)}
           />
         ))}
       </div>

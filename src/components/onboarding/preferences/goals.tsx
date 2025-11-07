@@ -1,8 +1,8 @@
 import { BookOpen, FileText, Focus, GraduationCap } from 'lucide-react'
 import { OptionCard } from '@/components/ui/option-card'
 import { StepContainer } from '@/components/ui/step-container'
-import type { PreferencesType } from './type'
-import type { GoalsType } from '@/lib'
+
+import type { GoalsType, PreferencesType } from '@/types'
 import type { ReactNode } from 'react'
 import { getIcon } from './getIcon'
 

@@ -26,8 +26,9 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "~supabase/*": ["./supabase/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "supabase"]
 }

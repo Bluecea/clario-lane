@@ -7,8 +7,6 @@ const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabase_anon_key = Deno.env.get("SUPABASE_ANON_KEY")!;
 const supabase_service_key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-console.log({ paystackSecretKey, supabaseUrl, supabase_anon_key });
-
 // For user-facing operations (respects RLS)
 const supabase = createClient(supabaseUrl, supabase_anon_key);
 

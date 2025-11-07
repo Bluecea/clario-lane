@@ -1,13 +1,18 @@
 import * as React from 'react'
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { Toaster } from 'sonner'
 import Navbar from '@/components/navbar'
-import { supabaseService } from '@/integration'
+
 import { Footer, PendingPage, ThemeProvider } from '@/components'
 import type { Session } from '@supabase/supabase-js'
 import { logServerError } from '@/lib'
+import { supabaseService } from '~supabase/clientServices'
+import { queryClient } from '@/queries'
 
 const countryNameKey = 'userCountryName'
 const countryCodeKey = 'userCountryCode'
@@ -16,6 +21,7 @@ type RootRouteContext = {
   session: Session | null
   userCountryName?: string
   userCountryCode?: string
+  queryClient?: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RootRouteContext>()({
@@ -54,13 +60,17 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
 function RootComponent() {
   return (
     <React.Fragment>
-      <ThemeProvider>
-        <Navbar />
-        <Outlet />
-        <Footer />
-        <Toaster position='top-center' />
-      </ThemeProvider>
-      <TanStackRouterDevtools position='bottom-right' />
+      <QueryClientProvider client={queryClient}>
+        {/* The rest of your application */}
+        <ThemeProvider>
+          <Navbar />
+          <Outlet />
+          <Footer />
+          <Toaster position='top-center' />
+        </ThemeProvider>
+        <TanStackRouterDevtools position='bottom-left' />
+        <ReactQueryDevtools position='bottom' initialIsOpen={false} />
+      </QueryClientProvider>
     </React.Fragment>
   )
 }

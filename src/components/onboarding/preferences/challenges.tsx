@@ -1,7 +1,7 @@
 import { BookOpen, FileText, Focus, Sparkles } from 'lucide-react'
 import { OptionCard, StepContainer } from '@/components'
-import type { PreferencesType } from './type'
-import type { ChallengesType } from '@/lib'
+
+import type { ChallengesType, PreferencesType } from '@/types'
 import type { ReactNode } from 'react'
 import { getIcon } from './getIcon'
 

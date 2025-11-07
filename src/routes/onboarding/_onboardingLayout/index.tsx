@@ -6,25 +6,36 @@ import {
   ContentType,
   Goals,
   OnboardingReadingTest,
-  type Preferences,
   QuickDrill,
   Progress,
   PendingPage,
   NotificationSetup,
 } from '@/components'
 import { Card } from '@/components/ui/card'
+import PaystackPop from '@paystack/inline-js'
 
 import { useOnboardingStore, useUserProfileStore } from '@/store'
-import { supabaseService } from '@/integration'
+
 import Billing from '@/components/onboarding/billing'
 import type {
   ChallengesType,
   ContentTypesType,
   GoalsType,
-  OnboardingPreferences,
   PlanObject,
-} from '@/lib'
+  Preferences,
+} from '@/types'
 import { toast } from 'sonner'
+import {
+  challengeRequest,
+  challengeRequestKey,
+  contentTypeRequest,
+  contentTypeRequestKey,
+  goalsRequest,
+  goalsRequestKey,
+  plansRequest,
+  plansRequestKey,
+} from '@/queries'
+import { supabaseService } from '~supabase/clientServices'
 
 export const Route = createFileRoute('/onboarding/_onboardingLayout/')({
   component: RouteComponent,
@@ -45,28 +56,11 @@ export const Route = createFileRoute('/onboarding/_onboardingLayout/')({
       throw redirect({ to: '/dashboard' })
     }
   },
-  loader: async (): Promise<OnboardingPreferences> => {
-    // You can fetch any data needed for the onboarding layout here
-
-    const challenges = await supabaseService
-      .getChallenges()
-      .then((data) => data as ChallengesType[])
-    const contentType = await supabaseService
-      .getContentTypes()
-      .then((data) => data as ContentTypesType[])
-    const goals = await supabaseService
-      .getGoals()
-      .then((data) => data as GoalsType[])
-
-    const supabase = supabaseService.supabase
-
-    const plans = await supabase.functions
-      .invoke('subscription/plans')
-      .then((res) => res.data as PlanObject[])
-
-    if (challenges && contentType && goals && plans) {
-      return { challenges, contentType, goals, plans }
-    } else return { challenges: [], contentType: [], goals: [], plans: [] }
+  loader: async ({ context }) => {
+    context.queryClient?.ensureQueryData(contentTypeRequest)
+    context.queryClient?.ensureQueryData(challengeRequest)
+    context.queryClient?.ensureQueryData(goalsRequest)
+    context.queryClient?.ensureQueryData(plansRequest)
   },
 })
 
@@ -80,7 +74,18 @@ function RouteComponent() {
   const progress = ((currentStep + 1) / totalSteps) * 100
   const route = useRouter()
 
-  const { challenges, contentType, goals, plans } = Route.useLoaderData()
+  const queryClient = Route.useRouteContext().queryClient
+
+  const goals = queryClient?.getQueryData([goalsRequestKey]) as GoalsType[]
+  const challenges = queryClient?.getQueryData([
+    challengeRequestKey,
+  ]) as ChallengesType[]
+  const contentType = queryClient?.getQueryData([
+    contentTypeRequestKey,
+  ]) as ContentTypesType[]
+  const plans = queryClient?.getQueryData([plansRequestKey]) as PlanObject[]
+
+  console.log({ challenges, contentType, goals, plans })
 
   const toggleSelection = (category: keyof Preferences, value: string) => {
     updateProfile({
@@ -88,6 +93,20 @@ function RouteComponent() {
         ? onboarding[category].filter((item) => item !== value)
         : [...onboarding[category], value],
     })
+  }
+
+  const session = Route.useRouteContext()?.session
+  const email = session?.user?.email ?? ''
+  const paystackPop = new PaystackPop()
+
+  const onSubscribe = async (amount: number, plan: string) => {
+    const data = await supabaseService.initiateSubscription({
+      email,
+      amount,
+      plan,
+    })
+
+    return paystackPop.resumeTransaction(data.data.access_code)
   }
 
   const handleSubmission = async () => {
@@ -126,7 +145,8 @@ function RouteComponent() {
   if (currentStep === 4) return <QuickDrill />
   if (currentStep === 5)
     return <NotificationSetup onContinue={handleSubmission} />
-  if (currentStep === 6 && plans?.length) return <Billing plans={plans} />
+  if (currentStep === 6 && plans?.length)
+    return <Billing plans={plans} onSubscribe={onSubscribe} />
   else route.navigate({ to: '/dashboard' })
 
   return (

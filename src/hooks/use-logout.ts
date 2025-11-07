@@ -1,6 +1,6 @@
-import { supabaseService } from "@/integration/supabase/supabase-services";
 import { redirect, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { supabaseService } from "~supabase/clientServices";
 
 export const useLogout = () => {
   const route = useRouter();

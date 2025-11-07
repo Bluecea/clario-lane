@@ -8,8 +8,8 @@ import {
   useUserProfileStore,
 } from "@/store";
 import { createClient } from "@supabase/supabase-js";
-import { apiInstance } from "../api-instance";
-import type { SubscriptionRequest } from ".";
+import { apiInstance } from "../../src/integration/api-instance";
+import type { SubscriptionRequest } from "@/types";
 
 class SupabaseService {
   public supabase;

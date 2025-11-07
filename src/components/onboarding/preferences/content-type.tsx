@@ -1,8 +1,8 @@
 import { BookOpen, FileText, GraduationCap, Newspaper } from 'lucide-react'
 import { OptionCard } from '@/components/ui/option-card'
 import { StepContainer } from '@/components/ui/step-container'
-import type { PreferencesType } from './type'
-import type { ContentTypesType } from '@/lib'
+
+import type { ContentTypesType, PreferencesType } from '@/types'
 import type { ReactNode } from 'react'
 import { getIcon } from './getIcon'
 
