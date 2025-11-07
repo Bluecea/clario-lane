@@ -4,11 +4,12 @@ import { useId } from 'react'
 import { useOnboardingStore } from '@/store'
 import { Button, Card, CardContent, Label, Switch } from '@/components'
 
-export function NotificationSetup() {
+type Props = {
+  onContinue: () => void
+}
+export function NotificationSetup({ onContinue }: Props) {
   const { updateProfile, ...onboarding } = useOnboardingStore()
-  const onContinue = () => {
-    updateProfile({ currentStep: onboarding.currentStep + 1 })
-  }
+
   const dailyId = useId()
   const weeklyId = useId()
   const achievementId = useId()
@@ -35,9 +36,9 @@ export function NotificationSetup() {
                 </div>
                 <Switch
                   id={dailyId}
-                  checked={onboarding.dailyReminder}
+                  checked={onboarding.daily_reminder}
                   onCheckedChange={(checked) =>
-                    updateProfile({ dailyReminder: checked })
+                    updateProfile({ daily_reminder: checked })
                   }
                 />
               </div>
@@ -54,9 +55,9 @@ export function NotificationSetup() {
                 </div>
                 <Switch
                   id={weeklyId}
-                  checked={onboarding.weeklyProgress}
+                  checked={onboarding.weekly_summary}
                   onCheckedChange={(checked) =>
-                    updateProfile({ weeklyProgress: checked })
+                    updateProfile({ weekly_summary: checked })
                   }
                 />
               </div>

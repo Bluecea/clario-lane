@@ -1,82 +1,72 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { Hono } from "jsr:@hono/hono";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const paystackSecretKey = Deno.env.get("PAYSTACK_SECRET_KEY")!;
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabase_anon_key = Deno.env.get("SUPABASE_ANON_KEY")!;
+const supabase_service_key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+console.log({ paystackSecretKey, supabaseUrl, supabase_anon_key });
 
 // For user-facing operations (respects RLS)
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_ANON_KEY")!,
-);
+const supabase = createClient(supabaseUrl, supabase_anon_key);
 
 // For admin operations (bypasses RLS)
-const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
+const supabaseAdmin = createClient(supabaseUrl, supabase_service_key);
 
-// url="https://api.paystack.co/subscription/enable"
-// authorization="Authorization: Bearer YOUR_SECRET_KEY"
-// content_type="Content-Type: application/json"
-// data='{
-//   "code": "SUB_vsyqdmlzble3uii",
-//   "token": "d7gofp6yppn3qz7"
-// }'
-// url="https://api.paystack.co/subscription/{id_or_code}"
-// authorization="Authorization: Bearer YOUR_SECRET_KEY"
+const planUrl = "https://api.paystack.co/plan";
 
 const initateTransactionUrl = "https://api.paystack.co/transaction/initialize";
 
-Deno.serve(async (req) => {
-  try {
-    const ip = req.headers.get("x-forwarded-for");
-    const response = await fetch(`https://ipapi.co/${ip}/json/`);
-    const ipInfo = await response.json();
-    console.log({ ipInfo });
-  } catch (error) {
-    console.log(error);
-  }
+const app = new Hono();
 
-  const userEmail = await supabase.auth.getUser().then(({ data }) =>
-    data.user?.email
-  ) ||
-    "darkness@gmail.com";
-  console.log({ userEmail });
-
-  const res = await fetch(initateTransactionUrl, {
-    method: "POST",
+app.post("/subscription/plans", async () => {
+  const response = await fetch(planUrl, {
+    method: "GET",
     headers: {
-      "Authorization": `Bearer ${paystackSecretKey}`,
+      Authorization: `Bearer ${paystackSecretKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      email: userEmail,
-      amount: 5000,
-    }),
   });
 
-  const paystackData = await res.json();
-  console.log({ paystackData });
+  const data = await response.json();
 
-  return new Response(
-    JSON.stringify(paystackData),
-    { headers: { "Content-Type": "application/json" } },
-  );
+  const plans = data.data.map((plan: any) => ({
+    id: plan.id,
+    name: plan.name,
+    amount: plan.amount / 100,
+    interval: plan.interval,
+    domain: plan.domain,
+    planCode: plan.plan_code,
+    description: plan.description,
+    currency: plan.currency,
+  }));
+  return Response.json(plans);
 });
 
-/* To invoke locally:
+app.post("/subscription/initialize", async (c) => {
+  const { email, amount, plan } = await c.req.json();
 
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
+  const response = await fetch(initateTransactionUrl, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${paystackSecretKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, amount: amount * 100, plan }),
+  });
 
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/subscription' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
+  const data = await response.json();
 
-*/
+  return Response.json(data);
+});
+
+app.post("/subscription/webhook/events", async (c) => {
+  c.text("got it");
+
+  const data = await c.req.json();
+  console.log({ data });
+});
+
+Deno.serve(app.fetch);

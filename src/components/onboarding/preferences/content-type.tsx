@@ -37,7 +37,7 @@ export function ContentType({
             title={content}
             description={description}
             selected={selections.includes(content)}
-            onClick={() => toggleSelection('contentTypes', content)}
+            onClick={() => toggleSelection('content_type', content)}
           />
         ))}
       </div>

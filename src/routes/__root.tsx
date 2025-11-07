@@ -14,8 +14,8 @@ const countryCodeKey = 'userCountryCode'
 
 type RootRouteContext = {
   session: Session | null
-  userCountryName: string
-  userCountryCode: string
+  userCountryName?: string
+  userCountryCode?: string
 }
 
 export const Route = createRootRouteWithContext<RootRouteContext>()({
@@ -27,6 +27,7 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
       const userCountryName = localStorage.getItem(countryNameKey)
       const session = await supabaseService.getSession()
       await supabaseService.getUser()
+
       if (userCountryCode) {
         return { userCountryCode, userCountryName, session }
       }
@@ -48,7 +49,6 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
       }
     }
   },
-  loader: async () => {},
 })
 
 function RootComponent() {

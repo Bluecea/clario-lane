@@ -3,65 +3,34 @@ import PricingCard from '@/components/pricingCard'
 import { Switch } from '..'
 import { useRouteContext } from '@tanstack/react-router'
 import { supabaseService } from '@/integration'
+import PaystackPop from '@paystack/inline-js'
+import type { PlanObject } from '@/lib'
 
-type PricingPlan = {
-  title: string
-  mo: number
-  yr: number
-  description: string
-  features: string[]
-}
+const features = [
+  'Unlimited speed reading exercises',
+  'Personalized AI coaching',
+  'Detailed progress analytics',
+  'Daily reading goals & reminders',
+  'Access to advanced RSVP training',
+  'Focus building exercises',
+]
 
-const countryPricingMap: Record<string, Array<PricingPlan>> = {
-  NG: [
-    {
-      title: 'Plus',
-      mo: 11555,
-      yr: 65000,
-      description: 'Access features',
-      features: [
-        'Unlimited speed reading exercises',
-        'Personalized AI coaching',
-        'Detailed progress analytics',
-        'Daily reading goals & reminders',
-        'Access to advanced RSVP training',
-        'Focus building exercises',
-      ],
-    },
-  ],
-  US: [
-    {
-      title: 'Plus',
-      mo: 8,
-      yr: 70,
-      description: 'Access features',
-      features: [
-        'Unlimited speed reading exercises',
-        'Personalized AI coaching',
-        'Detailed progress analytics',
-        'Daily reading goals & reminders',
-        'Access to advanced RSVP training',
-        'Focus building exercises',
-      ],
-    },
-  ],
-}
-
-export default function Billing() {
-  const { userCountryCode } = useRouteContext({ from: '__root__' })
+export default function Billing({ plans }: { plans: PlanObject[] }) {
+  const { session } = useRouteContext({ from: '__root__' })
   const [interval, setInterval] = useState<'mo' | 'yr'>('mo')
+  const email = session?.user.email || ''
+  const paystackPop = new PaystackPop()
 
-  const currency = userCountryCode === 'NG' ? 'NGN' : 'USD'
+  const handleSubscription = async (amount: number, plan: string) => {
+    const data = await supabaseService.initiateSubscription({
+      email,
+      amount,
+      plan,
+    })
 
-  const prices = countryPricingMap[userCountryCode]
+    const res = data.data
 
-  const handleSubscription = async (type: string) => {
-    // Implement subscription logic here
-    const res = await supabaseService.initiateSubscription(type)
-
-    console.log({ res })
-
-    return
+    return paystackPop.resumeTransaction(res.access_code)
   }
 
   return (
@@ -69,11 +38,11 @@ export default function Billing() {
       <header className='mb-8'>
         <h1 className='text-3xl font-extrabold'>Billing</h1>
         <p className='text-sm text-muted-foreground mt-2'>
-          Choose a plan that fits your team.
+          Choose a plan that fits you.
         </p>
       </header>
 
-      <div className='flex items-center gap-2 mb-6'>
+      <div className=' hidden items-center gap-2 mb-6'>
         <span className={interval === 'mo' ? `font-bold text-primary` : ''}>
           Monthly
         </span>
@@ -90,19 +59,18 @@ export default function Billing() {
         </div>
       </div>
 
-      <div className='flex flex-col items-center gap-4 mb-8'>
-        {prices.map((pricing) => (
+      <div className='grid md:grid-cols-2  gap-6'>
+        {plans.map((plan) => (
           <PricingCard
-            title={pricing.title}
-            price={interval === 'mo' ? pricing.mo : pricing.yr}
-            currency={currency}
-            frequency={interval}
-            description={pricing.description}
-            features={pricing.features}
-            badge='Popular'
-            popular
+            title={plan.name}
+            price={plan.amount}
+            currency={plan.currency}
+            frequency={plan.interval}
+            description={plan.description}
+            features={features}
+            badge={plan.interval}
             ctaLabel='Start'
-            onCta={() => handleSubscription('Pro')}
+            onCta={() => handleSubscription(plan.amount, plan.planCode)}
           />
         ))}
       </div>

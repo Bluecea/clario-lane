@@ -17,7 +17,14 @@ import { Card } from '@/components/ui/card'
 import { useOnboardingStore, useUserProfileStore } from '@/store'
 import { supabaseService } from '@/integration'
 import Billing from '@/components/onboarding/billing'
-import type { OnboardingPreferences } from '@/lib'
+import type {
+  ChallengesType,
+  ContentTypesType,
+  GoalsType,
+  OnboardingPreferences,
+  PlanObject,
+} from '@/lib'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/onboarding/_onboardingLayout/')({
   component: RouteComponent,
@@ -41,25 +48,39 @@ export const Route = createFileRoute('/onboarding/_onboardingLayout/')({
   loader: async (): Promise<OnboardingPreferences> => {
     // You can fetch any data needed for the onboarding layout here
 
-    const challenges = await supabaseService.getChallenges()
-    const contentTypes = await supabaseService.getContentTypes()
-    const goals = await supabaseService.getGoals()
+    const challenges = await supabaseService
+      .getChallenges()
+      .then((data) => data as ChallengesType[])
+    const contentType = await supabaseService
+      .getContentTypes()
+      .then((data) => data as ContentTypesType[])
+    const goals = await supabaseService
+      .getGoals()
+      .then((data) => data as GoalsType[])
 
-    if (challenges && contentTypes && goals) {
-      return { challenges, contentTypes, goals }
-    } else return { challenges: [], contentTypes: [], goals: [] }
+    const supabase = supabaseService.supabase
+
+    const plans = await supabase.functions
+      .invoke('subscription/plans')
+      .then((res) => res.data as PlanObject[])
+
+    if (challenges && contentType && goals && plans) {
+      return { challenges, contentType, goals, plans }
+    } else return { challenges: [], contentType: [], goals: [], plans: [] }
   },
 })
 
 function RouteComponent() {
-  const { currentStep, totalSteps, updateProfile, ...onboarding } =
-    useOnboardingStore()
+  const {
+    current_step: currentStep,
+    total_steps: totalSteps,
+    updateProfile,
+    ...onboarding
+  } = useOnboardingStore()
   const progress = ((currentStep + 1) / totalSteps) * 100
   const route = useRouter()
 
-  const { challenges, contentTypes, goals } = Route.useLoaderData()
-
-  console.log({ challenges, contentTypes, goals })
+  const { challenges, contentType, goals, plans } = Route.useLoaderData()
 
   const toggleSelection = (category: keyof Preferences, value: string) => {
     updateProfile({
@@ -71,23 +92,20 @@ function RouteComponent() {
 
   const handleSubmission = async () => {
     updateProfile({
-      streakDays: 1,
-      onboardingComplete: true,
+      streak_days: 1,
+      onboarding_completed: true,
       isSubmitting: true,
     })
 
-    await supabaseService.insertUser()
-
-    if (!onboarding.isSubmitting) {
-      route.navigate({ to: '/dashboard' })
-    }
+    supabaseService
+      .insertUser()
+      .then(() => handleNext())
+      .catch((error) => toast.error(error.message))
   }
 
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
-      updateProfile({ currentStep: currentStep + 1 })
-    } else {
-      handleSubmission()
+      updateProfile({ current_step: currentStep + 1 })
     }
   }
 
@@ -96,7 +114,7 @@ function RouteComponent() {
       case 0:
         return onboarding.challenges.length > 0
       case 1:
-        return onboarding.contentTypes.length > 0
+        return onboarding.content_type.length > 0
       case 2:
         return onboarding.goals.length > 0
       default:
@@ -106,8 +124,10 @@ function RouteComponent() {
 
   if (currentStep === 3) return <OnboardingReadingTest />
   if (currentStep === 4) return <QuickDrill />
-  if (currentStep === 5) return <NotificationSetup />
-  if (currentStep === 6) return <Billing />
+  if (currentStep === 5)
+    return <NotificationSetup onContinue={handleSubmission} />
+  if (currentStep === 6 && plans?.length) return <Billing plans={plans} />
+  else route.navigate({ to: '/dashboard' })
 
   return (
     <Card className='w-full mx-auto mt-10 lg:mt-20 max-w-3xl  p-8'>
@@ -143,8 +163,8 @@ function RouteComponent() {
         )}
         {currentStep === 1 && (
           <ContentType
-            contentType={contentTypes}
-            selections={onboarding.contentTypes}
+            contentType={contentType}
+            selections={onboarding.content_type}
             toggleSelection={toggleSelection}
           />
         )}

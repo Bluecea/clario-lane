@@ -29,7 +29,7 @@ export type PricingCardProps = {
 export default function PricingCard({
   title,
   price,
-  currency = 'USD',
+  currency = 'NGN',
   frequency = 'mo',
   description,
   badge,
@@ -60,10 +60,12 @@ export default function PricingCard({
 
       <CardContent className='flex flex-col gap-4'>
         <div className='flex items-baseline gap-3'>
-          <span className='text-4xl font-extrabold leading-none'>
+          <span className=' text-xl text-primary md:text-4xl font-extrabold leading-none'>
             {formatCurrency(price, currency)}
           </span>
-          <span className='text-sm text-muted-foreground'>/{frequency}</span>
+          <span className='text-sm font-semibold text-muted-foreground'>
+            /{frequency.slice(0, 2)}
+          </span>
         </div>
 
         <Separator />
@@ -87,7 +89,11 @@ export default function PricingCard({
       </CardContent>
 
       <CardFooter className='flex flex-col gap-3'>
-        <Button className='w-full' size={'lg'} onClick={onCta}>
+        <Button
+          className='w-full'
+          variant={'outline'}
+          size={'lg'}
+          onClick={onCta}>
           {ctaLabel}
         </Button>
         {popular && (

@@ -6,15 +6,19 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 export const Route = createFileRoute('/onboarding/_onboardingLayout')({
   component: RouteComponent,
   beforeLoad: () => {
-    useOnboardingStore.setState({ currentStep: 5 })
+    useOnboardingStore.setState({ current_step: 5 })
   },
 })
 
 function RouteComponent() {
-  const { currentStep, updateProfile, totalSteps } = useOnboardingStore()
+  const {
+    current_step: currentStep,
+    updateProfile,
+    total_steps: totalSteps,
+  } = useOnboardingStore()
 
   const onSkipNextStep = () => {
-    if (currentStep < 6) updateProfile({ currentStep: currentStep + 1 })
+    if (currentStep < 6) updateProfile({ current_step: currentStep + 1 })
   }
 
   const canSkip = [4, 5].includes(currentStep)
@@ -29,7 +33,9 @@ function RouteComponent() {
               <Button
                 size={'sm'}
                 variant='ghost'
-                onClick={() => updateProfile({ currentStep: currentStep - 1 })}>
+                onClick={() =>
+                  updateProfile({ current_step: currentStep - 1 })
+                }>
                 <ArrowLeft />
                 Back
               </Button>

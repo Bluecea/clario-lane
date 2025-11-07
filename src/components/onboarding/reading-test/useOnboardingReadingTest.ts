@@ -5,18 +5,22 @@ import { PASSAGE } from "./passage";
 export function useOnboardingReadingTest() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const { updateProfile, startTime, readingTime, xpEarned } =
-    useOnboardingStore();
+  const {
+    updateProfile,
+    start_time: startTime,
+    reading_time: readingTime,
+    xp_earned: xpEarned,
+  } = useOnboardingStore();
 
   const handleStartReading = () => {
-    updateProfile({ readingTestStage: "reading", startTime: Date.now() });
+    updateProfile({ reading_test_stage: "reading", start_time: Date.now() });
   };
 
   const handleFinishReading = () => {
     const endTime = Date.now();
     updateProfile({
-      readingTestStage: "questions",
-      readingTime: (endTime - startTime) / 1000,
+      reading_test_stage: "questions",
+      reading_time: (endTime - startTime) / 1000,
     });
   };
 
@@ -44,11 +48,11 @@ export function useOnboardingReadingTest() {
     const baseLineWPM = Math.round((PASSAGE.wordCount / readingTime) * 60);
 
     updateProfile({
-      baselineComprehension,
-      baseLineWPM,
-      focusScore: 92,
-      xpEarned: xpEarned ? xpEarned + 150 : 150,
-      readingTestStage: "results",
+      baseline_comprehension: baselineComprehension,
+      baseline_wpm: baseLineWPM,
+      focus_score: 92,
+      xp_earned: xpEarned ? xpEarned + 150 : 150,
+      reading_test_stage: "results",
     });
   };
 

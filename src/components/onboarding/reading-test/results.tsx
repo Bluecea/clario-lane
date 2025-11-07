@@ -6,7 +6,7 @@ import { useOnboardingStore } from '@/store'
 export function Results() {
   const onboarding = useOnboardingStore()
   const onContinue = () => {
-    onboarding.updateProfile({ currentStep: onboarding.currentStep + 1 })
+    onboarding.updateProfile({ current_step: onboarding.current_step + 1 })
   }
 
   return (
@@ -40,7 +40,7 @@ export function Results() {
               <Award className='w-5 h-5 text-primary' />
               <span className='text-sm text-muted-foreground'>XP Earned</span>
             </div>
-            <div className='text-4xl text-primary'>+{onboarding.xpEarned}</div>
+            <div className='text-4xl text-primary'>+{onboarding.xp_earned}</div>
           </motion.div>
 
           {/* Performance Metrics */}
@@ -48,19 +48,19 @@ export function Results() {
             <MetricCard
               icon={<TrendingUp className='w-5 h-5' />}
               label='Average Speed'
-              value={`${onboarding.baseLineWPM} WPM`}
+              value={`${onboarding.baseline_wpm} WPM`}
               color='text-blue-600'
             />
             <MetricCard
               icon={<Target className='w-5 h-5' />}
               label='Comprehension'
-              value={`${onboarding.baselineComprehension}%`}
+              value={`${onboarding.baseline_comprehension}%`}
               color='text-green-600'
             />
             <MetricCard
               icon={<Zap className='w-5 h-5' />}
               label='Focus Score'
-              value={`${onboarding.focusScore}%`}
+              value={`${onboarding.focus_score}%`}
               color='text-purple-600'
             />
           </div>
@@ -107,8 +107,8 @@ export function Results() {
       </Card>
 
       <ConfettiComponent
-        particleCount={onboarding.baselineComprehension! * 3}
-        effectCount={Math.round(onboarding.baselineComprehension! / 20)}
+        particleCount={onboarding.baseline_comprehension! * 3}
+        effectCount={Math.round(onboarding.baseline_comprehension! / 20)}
       />
     </div>
   )

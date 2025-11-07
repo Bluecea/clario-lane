@@ -34,8 +34,8 @@ export function useQuickDrill() {
             // Award first badge and XP
             updateProfile({
               badges: ["first_drill"],
-              xpEarned: onboarding?.xpEarned ? onboarding.xpEarned + 50 : 50,
-              totalSessions: 1,
+              xp_earned: onboarding?.xp_earned ? onboarding.xp_earned + 50 : 50,
+              total_sessions: 1,
             });
 
             setStage("results");

@@ -2,14 +2,17 @@ import { clientEnv } from "@/config/env";
 import { logServerError } from "@/lib";
 import {
   initialUserProfile,
+  OnboardingSchema,
   useOnboardingStore,
   type UserProfileType,
   useUserProfileStore,
 } from "@/store";
 import { createClient } from "@supabase/supabase-js";
+import { apiInstance } from "../api-instance";
+import type { SubscriptionRequest } from ".";
 
 class SupabaseService {
-  private supabase;
+  public supabase;
   constructor() {
     this.supabase = createClient(
       clientEnv.VITE_SUPABASE_URL,
@@ -100,28 +103,34 @@ class SupabaseService {
   public async insertUser() {
     try {
       const store = useOnboardingStore.getState();
-      const { error } = await this.supabase.from("users").insert({
-        name: store.name,
-        email: store.email,
-        dateOfBirth: store.dateOfBirth,
-        achievements: store.achievements,
-        baseLineWPM: store.baseLineWPM,
-        badges: store.badges,
-        goals: store.goals,
-        contentTypes: store.contentTypes,
-        challenges: store.challenges,
-        currentComprehensionScore: store.currentComprehensionScore,
-        focusScore: store.focusScore,
-        dailyReminder: store.dailyReminder,
-        weeklyProgress: store.weeklyProgress,
-        streakDays: store.streakDays,
-        xpEarned: store.xpEarned,
-        currentWPM: store.baseLineWPM,
-        level: store.level,
-        baselineComprehension: store.baselineComprehension,
-        currentComprehension: store.currentComprehensionScore,
-        onboardingComplete: store.onboardingComplete,
-      });
+      const { success, error: zodError } = await OnboardingSchema
+        .safeParseAsync(store);
+
+      if (!success) throw zodError;
+
+      const { error } = await this.supabase.from("users").insert({});
+      //   {
+      //   name: store.name,
+      //   email: store.email,
+      //   dateOfBirth: store.date_of_birth,
+      //   achievements: store.achievements,
+      //   baseLineWPM: store.baseline_wpm,
+      //   badges: store.badges,
+      //   goals: store.goals,
+      //   contentTypes: store.content_type,
+      //   challenges: store.challenges,
+      //   currentComprehensionScore: store.current_comprehension_score,
+      //   focusScore: store.focus_score,
+      //   dailyReminder: store.daily_reminder,
+      //   weeklyProgress: store.weekly_summary,
+      //   streakDays: store.streak_days,
+      //   xpEarned: store.xp_earned,
+      //   currentWPM: store.baseline_wpm,
+      //   level: store.level,
+      //   baselineComprehension: store.baseline_comprehension,
+      //   currentComprehension: store.current_comprehension_score,
+      //   onboardingComplete: store.onboarding_completed,
+      // }
 
       if (error) {
         throw error;
@@ -130,11 +139,11 @@ class SupabaseService {
       const res = await this.getUser();
       if (res) {
         useOnboardingStore.setState({
-          currentStep: 0,
+          current_step: 0,
           isSubmitting: false,
         });
         useUserProfileStore.setState({
-          onboardingComplete: store.onboardingComplete,
+          onboardingComplete: store.onboarding_completed,
         });
       }
 
@@ -176,13 +185,14 @@ class SupabaseService {
     return data;
   }
 
-  async initiateSubscription(type: string) {
-    this.supabase.functions.invoke("subscription", {
-      body: {
-        name: "ClarioLane User",
-        type,
-      },
-    });
+  async getUserCurrency() {
+    const { data } = await apiInstance.get("subscription/user-currency");
+    return data;
+  }
+
+  async initiateSubscription(params: SubscriptionRequest) {
+    const { data } = await apiInstance.post("subscription/initialize", params);
+    return data;
   }
 }
 

@@ -22,8 +22,20 @@ export type GoalsType = {
   updated_at?: string;
 };
 
+export type PlanObject = {
+  id: number;
+  name: string;
+  amount: number;
+  interval: string;
+  domain: string;
+  planCode: string;
+  description: string;
+  currency: string;
+};
+
 export type OnboardingPreferences = {
   challenges: ChallengesType[];
-  contentTypes: ContentTypesType[];
+  contentType: ContentTypesType[];
   goals: GoalsType[];
+  plans?: PlanObject[];
 };

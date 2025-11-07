@@ -7,7 +7,7 @@ type Props = {
   improvement: number
 }
 export function Result({ improvement }: Props) {
-  const { updateProfile, currentStep } = useOnboardingStore()
+  const { updateProfile, current_step: currentStep } = useOnboardingStore()
 
   return (
     <motion.div
@@ -47,7 +47,7 @@ export function Result({ improvement }: Props) {
       </div>
 
       <Button
-        onClick={() => updateProfile({ currentStep: currentStep + 1 })}
+        onClick={() => updateProfile({ current_step: currentStep + 1 })}
         size='lg'
         className='w-full'>
         Continue
