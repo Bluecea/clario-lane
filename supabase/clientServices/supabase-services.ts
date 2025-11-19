@@ -89,6 +89,21 @@ class SupabaseService {
     return session;
   }
 
+  async getPracticedSessions(userId?: string) {
+    const { data, error } = await this.sp.from("practice_sessions").select("*")
+      .eq("user_id", userId || "").order("created_at", { ascending: false })
+      .limit(6);
+    if (error) {
+      logServerError(error);
+    }
+    return data?.sort((a, b) => {
+      const dateA = new Date(`${a.created_at}`);
+      const dateB = new Date(`${b.created_at}`);
+      // @ts-ignore
+      return dateA - dateB;
+    });
+  }
+
   channel(callback: (payload: UserTable) => void) {
     return this.sp.channel("changes", {
       config: {

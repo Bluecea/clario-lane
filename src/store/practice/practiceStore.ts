@@ -24,6 +24,7 @@ export type PracticeStore = {
   totalQuestions: number;
   startTime: number;
   elapsedTime: number;
+  nextWpm?: number;
 
   currentStep: PracticeStep;
   passage: Passage | null;

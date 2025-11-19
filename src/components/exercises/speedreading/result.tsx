@@ -4,14 +4,15 @@ import { useRouter } from '@tanstack/react-router'
 import { usePracticeStore } from '@/store'
 import { fetchPassage } from '@/integration'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
 export const Results = () => {
-  const { wpm, comprehension, reset } = usePracticeStore()
+  const { wpm, comprehension, reset, updateStore } = usePracticeStore()
   const route = useRouter()
   const { refetch } = useQuery(fetchPassage)
 
   const ers = Math.round((wpm * comprehension) / 100)
-  const nextWpm = wpm + 30
+  const nextWpm = ers > 70 ? wpm + 30 : wpm
   const wpmChange = nextWpm - wpm
 
   const onComplete = () => {
@@ -23,6 +24,10 @@ export const Results = () => {
     refetch()
     reset()
   }
+
+  useEffect(() => {
+    updateStore({ nextWpm })
+  }, [nextWpm, updateStore])
 
   return (
     <>

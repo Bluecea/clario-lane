@@ -19,7 +19,8 @@ export const useRSVPReader = ({ onPause }: RSVPReaderProps) => {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { setWpm, wpm, setStep, updateStore, passage } = usePracticeStore();
+  const { setWpm, wpm, nextWpm, setStep, updateStore, passage } =
+    usePracticeStore();
 
   const { isLoading } = useQuery(fetchPassage);
 
@@ -132,7 +133,7 @@ export const useRSVPReader = ({ onPause }: RSVPReaderProps) => {
     words,
     currentIndex,
     isPlaying,
-    wpm,
+    wpm: nextWpm || wpm,
     loading: isLoading,
     setWpm,
     formatTime,

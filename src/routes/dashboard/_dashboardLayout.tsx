@@ -66,7 +66,7 @@ function RouteComponent() {
   }, [activePathname, currentPath, pathsArray])
 
   return (
-    <div className='min-h-screen '>
+    <div className='min-h-fit '>
       <div className='max-w-7xl mx-auto px-6 py-8'>
         <Tabs value={activePathname} className='w-fit mx-auto '>
           <TabsList
