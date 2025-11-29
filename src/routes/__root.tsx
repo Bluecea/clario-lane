@@ -7,7 +7,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import Navbar from '@/components/navbar'
 
-import { Footer, PendingPage, ThemeProvider } from '@/components'
+import { Footer, PendingPage, SettingsProvider } from '@/components'
 import type { Session } from '@supabase/supabase-js'
 import { supabaseService } from '~supabase/clientServices'
 import type { UserTable } from '@/types'
@@ -46,14 +46,14 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
 function RootComponent() {
   return (
     <React.Fragment>
-      <ThemeProvider>
+      <SettingsProvider>
         <Navbar />
         <Outlet />
         <Footer />
         <Toaster position='top-center' />
         <TanStackRouterDevtools position='bottom-left' />
         <ReactQueryDevtools position='bottom' initialIsOpen={false} />
-      </ThemeProvider>
+      </SettingsProvider>
     </React.Fragment>
   )
 }

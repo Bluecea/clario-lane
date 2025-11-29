@@ -29,7 +29,6 @@ const Navbar = () => {
           ) : (
             <ProfileMenu session={session} />
           )}
-          <ThemeToggle />
         </div>
       </div>
     </nav>
