@@ -33,6 +33,8 @@ export function RouteComponent() {
     throw redirect({ to: '/auth' })
   }
 
+  const badges = JSON.parse(userProfile.badges || '[]')
+
   const readingSpeedData = data?.length
     ? data?.map((practiced_session, index) => ({
         session: `session ${index + 1}`,
@@ -105,7 +107,7 @@ export function RouteComponent() {
           current_wpm={userProfile.current_wpm || 0}
           goalWPM={goalWPM}
           progressPercent={progressPercent}
-          badges={userProfile.badges ? [...userProfile.badges] : undefined}
+          badges={badges}
           baseline_wpm={userProfile.baseline_wpm || 0}
           level={userProfile.level || 0}
           streak_days={userProfile.streak_days || 0}

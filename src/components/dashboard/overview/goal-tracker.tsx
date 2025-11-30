@@ -10,18 +10,15 @@ import { motion } from 'motion/react'
 
 type Props = Pick<
   UserProfileType,
-  | 'baseline_wpm'
-  | 'current_wpm'
-  | 'badges'
-  | 'streak_days'
-  | 'level'
-  | 'total_sessions'
+  'baseline_wpm' | 'current_wpm' | 'streak_days' | 'level' | 'total_sessions'
 > & {
   progressPercent: number
   goalWPM: number
+  badges: string[]
 }
 
 export const GoalTrackerCard = (props: Props) => {
+  console.log(props)
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
