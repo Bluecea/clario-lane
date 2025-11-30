@@ -179,15 +179,7 @@ export type Database = {
           payload?: Json
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "paystack_payloads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       practice_sessions: {
         Row: {
@@ -253,14 +245,34 @@ export type Database = {
             referencedRelation: "passages"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "practice_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string | null
+          font_face: string
+          font_size_scale: number
+          theme: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          font_face?: string
+          font_size_scale?: number
+          theme?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          font_face?: string
+          font_size_scale?: number
+          theme?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       users: {
         Row: {
@@ -307,7 +319,7 @@ export type Database = {
           email: string
           focus_score?: number | null
           goals?: string | null
-          id?: string
+          id: string
           is_subscribed?: boolean | null
           last_active_date?: string | null
           level?: number | null
@@ -357,7 +369,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      update_avg_scores: { Args: { uid: string }; Returns: Json }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

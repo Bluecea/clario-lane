@@ -1,5 +1,6 @@
+-- Users table with auth.uid() as primary key
 create table if not exists users (
-    id uuid primary key default gen_random_uuid(),
+    id uuid primary key references auth.users(id) on delete cascade,
     email text unique not null,
     name text not null,
     baseline_wpm numeric default 0,
@@ -28,3 +29,30 @@ create table if not exists users (
     created_at timestamptz default now(),
     updated_at timestamptz default now()
 );
+
+-- Enable RLS
+alter table users enable row level security;
+
+-- RLS Policies for users table
+create policy "Users can view their own data"
+on users for select
+to authenticated
+using (auth.uid() = id);
+
+create policy "Users can update their own data"
+on users for update
+to authenticated
+using (auth.uid() = id);
+
+create policy "Users can insert their own data"
+on users for insert
+to authenticated
+with check (auth.uid() = id);
+
+create policy "Users can delete their own data"
+on users for delete
+to authenticated
+using (auth.uid() = id);
+
+-- Enable realtime for users table
+alter publication supabase_realtime add table users;

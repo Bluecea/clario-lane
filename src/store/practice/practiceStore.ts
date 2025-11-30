@@ -1,19 +1,6 @@
 import { PracticeStep } from "@/lib";
+import type { Passage } from "@/types";
 import { create } from "zustand";
-
-export type Question = {
-  id: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
-};
-
-export type Passage = {
-  id: string;
-  text: string;
-  title: string;
-  questions: Question[];
-};
 
 export type PracticeStore = {
   wpm: number;
@@ -55,15 +42,15 @@ const initialState = {
   wordsRead: 0,
 };
 
-export const usePracticeStore = create<
-  PracticeStore & PracticeStoreActions
->((set) => ({
-  ...initialState,
-  setStep: (step: PracticeStep) => set({ currentStep: step }),
-  setCompleted: (
-    values: Pick<PracticeStore, "wordsRead" | "duration" | "wpm">,
-  ) => set(values),
-  setWpm: (wpm: number) => set({ wpm }),
-  updateStore: (values: Partial<PracticeStore>) => set(values),
-  reset: () => set(initialState),
-}));
+export const usePracticeStore = create<PracticeStore & PracticeStoreActions>(
+  (set) => ({
+    ...initialState,
+    setStep: (step: PracticeStep) => set({ currentStep: step }),
+    setCompleted: (
+      values: Pick<PracticeStore, "wordsRead" | "duration" | "wpm">,
+    ) => set(values),
+    setWpm: (wpm: number) => set({ wpm }),
+    updateStore: (values: Partial<PracticeStore>) => set(values),
+    reset: () => set(initialState),
+  }),
+);

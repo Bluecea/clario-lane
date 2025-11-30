@@ -77,18 +77,20 @@ export type AuthValidationSchema = z.infer<typeof AuthValidationSchema>;
 
 export type UserTable = Database["public"]["Tables"]["users"]["Row"];
 
+export type Question = {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+};
+
 export type Passage = {
   id: string;
-  tags: string[]; // ['fiction, news']
   text: string;
   title: string;
+  category: string;
   difficulty: "Easy" | "Medium" | "Hard";
-  questions: [
-    id: string,
-    options: string[],
-    question: string,
-    correctIndex: number,
-  ];
+  questions: Question[];
 };
 
 export type PassageResponse = {
