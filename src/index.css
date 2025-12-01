@@ -169,3 +169,12 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbars for elements with .no-scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

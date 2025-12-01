@@ -17,7 +17,6 @@ export const useRSVPReader = ({ onPause }: RSVPReaderProps) => {
     isPlaying,
     currentIndex,
     words,
-    elapsedTime,
     startTime,
     setWords,
     setCurrentIndex,
@@ -58,16 +57,19 @@ export const useRSVPReader = ({ onPause }: RSVPReaderProps) => {
       const msPerWord = (60 / wpm) * 1000;
 
       intervalRef.current = setInterval(() => {
-        setCurrentIndex(currentIndex + 1);
-
-        // Stop playing when complete
-        if (currentIndex + 1 >= words.length) {
-          setIsPlaying(false);
-        }
+        setCurrentIndex((prev) => {
+          const next = prev + 1;
+          // Stop playing when complete
+          if (next >= words.length) {
+            setIsPlaying(false);
+            return words.length; // Set to end
+          }
+          return next;
+        });
       }, msPerWord);
 
       timerRef.current = setInterval(() => {
-        setElapsedTime(elapsedTime + 0.1);
+        setElapsedTime((prev) => prev + 0.1);
       }, 100);
 
       return () => {
@@ -82,8 +84,6 @@ export const useRSVPReader = ({ onPause }: RSVPReaderProps) => {
     isPlaying,
     wpm,
     words.length,
-    currentIndex,
-    elapsedTime,
     setCurrentIndex,
     setElapsedTime,
     setIsPlaying,

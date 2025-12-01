@@ -68,22 +68,23 @@ export const useComprehensionReader = ({
       const animate = (time: number) => {
         if (lastFrameTimeRef.current !== null) {
           const delta = (time - lastFrameTimeRef.current) / 1000; // seconds
-          setElapsedTime(elapsedTime + delta);
 
-          // Check if complete
-          if (
-            elapsedTime + delta >= estimatedDuration && estimatedDuration > 0
-          ) {
-            setIsPlaying(false);
-            setElapsedTime(estimatedDuration);
-            return;
-          }
+          // Use functional update to get the latest elapsed time
+          setElapsedTime((prevElapsed) => {
+            const newElapsed = prevElapsed + delta;
+
+            // Check if complete
+            if (newElapsed >= estimatedDuration && estimatedDuration > 0) {
+              setIsPlaying(false);
+              return estimatedDuration;
+            }
+
+            return newElapsed;
+          });
         }
         lastFrameTimeRef.current = time;
 
-        if (isPlaying) {
-          animationFrameRef.current = requestAnimationFrame(animate);
-        }
+        animationFrameRef.current = requestAnimationFrame(animate);
       };
 
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -99,7 +100,7 @@ export const useComprehensionReader = ({
         cancelAnimationFrame(animationFrameRef.current);
       }
     }
-  }, [isPlaying, estimatedDuration, elapsedTime, setElapsedTime, setIsPlaying]);
+  }, [isPlaying, estimatedDuration, setElapsedTime, setIsPlaying]);
 
   // Handle onPause callback
   useEffect(() => {

@@ -39,10 +39,10 @@ type PracticeStoreActions = {
   // New reader actions
   setIsPlaying: (isPlaying: boolean) => void;
   setProgress: (progress: number) => void;
-  setElapsedTime: (elapsedTime: number) => void;
+  setElapsedTime: (elapsedTime: number | ((prev: number) => number)) => void;
   setStartTime: (startTime: number) => void;
   setWords: (words: string[]) => void;
-  setCurrentIndex: (currentIndex: number) => void;
+  setCurrentIndex: (currentIndex: number | ((prev: number) => number)) => void;
   setEstimatedDuration: (duration: number) => void;
   handlePlayPause: () => void;
   handleReset: () => void;
@@ -86,10 +86,20 @@ export const usePracticeStore = create<PracticeStore & PracticeStoreActions>(
     // New reader actions
     setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
     setProgress: (progress: number) => set({ progress }),
-    setElapsedTime: (elapsedTime: number) => set({ elapsedTime }),
+    setElapsedTime: (elapsedTime: number | ((prev: number) => number)) =>
+      set((state) => ({
+        elapsedTime: typeof elapsedTime === "function"
+          ? elapsedTime(state.elapsedTime)
+          : elapsedTime,
+      })),
     setStartTime: (startTime: number) => set({ startTime }),
     setWords: (words: string[]) => set({ words }),
-    setCurrentIndex: (currentIndex: number) => set({ currentIndex }),
+    setCurrentIndex: (currentIndex: number | ((prev: number) => number)) =>
+      set((state) => ({
+        currentIndex: typeof currentIndex === "function"
+          ? currentIndex(state.currentIndex)
+          : currentIndex,
+      })),
     setEstimatedDuration: (estimatedDuration: number) =>
       set({ estimatedDuration }),
 
@@ -114,15 +124,8 @@ export const usePracticeStore = create<PracticeStore & PracticeStoreActions>(
     },
 
     handleComplete: () => {
-      const {
-        isPlaying,
-        startTime,
-        elapsedTime,
-        wordsRead,
-        wpm,
-        setStep,
-        updateStore,
-      } = get();
+      const { startTime, elapsedTime, wordsRead, wpm, setStep, updateStore } =
+        get();
 
       set({ isPlaying: false });
 
