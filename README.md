@@ -1,75 +1,74 @@
-# React + TypeScript + Vite
+# ClarioLane
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ClarioLane is a comprehensive reading improvement platform designed to enhance reading speed, comprehension, and efficiency through scientifically proven techniques.
 
-Currently, two official plugins are available:
+## Reading Practice Modes
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+We offer three distinct practice modes, each targeting specific aspects of reading proficiency:
 
-## React Compiler
+### 1. Speed Reading (RSVP)
+*   **Explanation:** Uses **Rapid Serial Visual Presentation** to display words one by one at a fixed location on the screen.
+*   **Benefits:**
+    *   **Eliminates Sub-vocalization:** The speed forces you to stop "saying" words in your head.
+    *   **Reduces Eye Movement:** Since words appear in the same spot, your eyes don't need to move (saccade) across the page, saving time and energy.
+    *   **Increases Processing Speed:** Trains your brain to recognize words instantly.
+*   **Difficulty:** **High**. It requires intense focus and can be fatiguing initially.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### 2. Comprehension (Scrolling Text)
+*   **Explanation:** Text scrolls vertically automatically, similar to a teleprompter or karaoke lyrics, with a focus line or area.
+*   **Benefits:**
+    *   **Sustained Attention:** Keeps you engaged with a continuous flow of text.
+    *   **Smooth Tracking:** Trains your eyes to track moving text smoothly without backtracking (regression).
+    *   **Natural Flow:** Provides a more natural reading experience than RSVP while still guiding your pace.
+*   **Difficulty:** **Low/Medium**. It's easier to follow and allows for some context retention, making it great for longer passages.
 
-Note: This will impact Vite dev & build performances.
+### 3. Word Chunking
+*   **Explanation:** Flashes groups of words (chunks) at a time, with the center word highlighted as a focal point.
+*   **Benefits:**
+    *   **Expands Peripheral Vision:** Encourages you to focus on the center word while reading the surrounding words with your peripheral vision.
+    *   **Increases Fixation Capacity:** Trains you to process multiple words in a single glance (fixation), reducing the total number of eye stops needed per line.
+    *   **Reduces Eye Strain:** Less eye movement is required compared to standard reading.
+*   **Difficulty:** **Medium/High**. It requires training to effectively process multiple words at once without moving your eyes to each individual word.
 
-## Expanding the ESLint configuration
+## Implementation Walkthrough
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Word Chunking Reader - Flash Behavior
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Successfully implemented word chunking reader that **flashes complete chunks** of words (like RSVP but with N words).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+#### How It Works
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Flash Pattern:**
+1. Display chunk of N words (based on chunk size slider)
+2. Middle word highlighted in `text-primary` 
+3. Other words in normal `text-foreground`
+4. After duration, flash next chunk
+5. Repeat until passage complete
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Timing:**
+- Time per chunk = `(60 / WPM) * chunkSize`
+- Example: 200 WPM, 3 words = 900ms per chunk
+- Chunk size affects total time proportionally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#### Key Changes
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**[useWordChunkingReader.ts](src/components/exercises/wordchunking/useWordChunkingReader.ts)**
+- Progression: `currentIndex + chunkSize` (was +1)
+- Timing: `msPerWord * chunkSize` (chunk duration)
+- Reads `chunkSize` from store
+
+**[WordChunkDisplay.tsx](src/components/exercises/wordchunking/WordChunkDisplay.tsx)**
+- Shows: `words[currentIndex...currentIndex+chunkSize]`
+- Highlights: Middle word (index = `Math.floor(chunkSize/2)`)
+- Other words: Normal color (not muted)
+
+### Complete System
+
+| Practice Type | Display Pattern | Progression |
+|--------------|----------------|-------------|
+| Speed Reading | 1 word RSVP | +1 word |
+| Comprehension | Scrolling text | Continuous |
+| Word Chunking | N-word flash | +N words |
+
+### Zero Prop Drilling
+All components consume from `usePracticeStore` - no props passed between components.
