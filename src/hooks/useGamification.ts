@@ -10,9 +10,20 @@ import {
 } from "@/integration/queries/fetchQuests";
 import { supabaseService } from "~supabase/clientServices";
 import { useEffect, useState } from "react";
+import { useGamificationStore } from "@/store/gamification/useGamificationStore";
 
 export function useGamification() {
   const [userId, setUserId] = useState<string | undefined>(undefined);
+
+  // Store actions
+  const {
+    setStats,
+    setAchievements,
+    setUserAchievements,
+    setQuests,
+    setUserQuests,
+    setIsLoading,
+  } = useGamificationStore();
 
   useEffect(() => {
     supabaseService.getSession().then((session) => {
@@ -35,6 +46,32 @@ export function useGamification() {
   const { data: userQuests, isLoading: isLoadingUserQuests } = useQuery(
     fetchUserQuests(userId),
   );
+
+  const isLoading = isLoadingStats || isLoadingAllAchievements ||
+    isLoadingUserAchievements || isLoadingAllQuests || isLoadingUserQuests;
+
+  // Sync with store
+  useEffect(() => {
+    if (stats !== undefined) setStats(stats || null);
+    if (allAchievements !== undefined) setAchievements(allAchievements);
+    if (userAchievements !== undefined) setUserAchievements(userAchievements);
+    if (allQuests !== undefined) setQuests(allQuests);
+    if (userQuests !== undefined) setUserQuests(userQuests);
+    setIsLoading(isLoading);
+  }, [
+    stats,
+    allAchievements,
+    userAchievements,
+    allQuests,
+    userQuests,
+    isLoading,
+    setStats,
+    setAchievements,
+    setUserAchievements,
+    setQuests,
+    setUserQuests,
+    setIsLoading,
+  ]);
 
   // Helper to check if an achievement is unlocked
   const isAchievementUnlocked = (achievementId: string) => {
@@ -60,7 +97,6 @@ export function useGamification() {
       userProgress: userQuests,
       getProgress: getQuestProgress,
     },
-    isLoading: isLoadingStats || isLoadingAllAchievements ||
-      isLoadingUserAchievements || isLoadingAllQuests || isLoadingUserQuests,
+    isLoading,
   };
 }

@@ -3,10 +3,10 @@ import {
   StatsOverview,
   ProgressCharts,
   ActivityChart,
-  AchievementsCard,
   MilestonesCard,
 } from '@/components/dashboard/progress'
-import { getBadges } from '@/lib'
+import { AchievementsGrid } from '@/components/gamification'
+import { useGamification } from '@/hooks'
 
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
@@ -35,6 +35,8 @@ export function RouteComponent() {
     queryFn: () => supabaseService.getPracticedSessions(userProfile?.id, 100),
     enabled: !!userProfile?.id,
   })
+
+  const { isLoading: isLoadingGamification } = useGamification()
 
   if (isLoading || !userProfile) {
     return (
@@ -96,7 +98,7 @@ export function RouteComponent() {
     }
   })
 
-  const badges = getBadges(userProfile, sessions)
+  // const badges = getBadges(userProfile, sessions) // Removed as it's no longer used
 
   const milestones = [
     {
@@ -142,7 +144,7 @@ export function RouteComponent() {
       transition={{ type: 'spring' }}
       className='space-y-6'>
       {/* Stats Overview */}
-      <StatsOverview userProfile={userProfile} badges={badges} />
+      <StatsOverview userProfile={userProfile} />
 
       {/* Charts */}
       <ProgressCharts weeklyProgress={weeklyProgress} />
@@ -151,8 +153,14 @@ export function RouteComponent() {
       <ActivityChart sessionData={sessionData} />
 
       <div className='grid md:grid-cols-2 gap-6'>
-        {/* Badges */}
-        <AchievementsCard badges={badges} />
+        {/* Badges/Achievements */}
+        {!isLoadingGamification ? (
+          <AchievementsGrid />
+        ) : (
+          <div className='h-[300px] flex items-center justify-center border rounded-lg bg-gray-50 dark:bg-zinc-900/50 dark:border-zinc-800'>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+          </div>
+        )}
 
         {/* Milestones */}
         <MilestonesCard milestones={milestones} />

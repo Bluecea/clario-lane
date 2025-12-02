@@ -1,14 +1,15 @@
 import { Card, CardContent } from '@/components'
-import { TrendingUp, Calendar, Flame, Trophy } from 'lucide-react'
+import { TrendingUp, Calendar, Flame, Star } from 'lucide-react'
 import type { UserProfileType } from '@/types'
+import { useGamificationStore } from '@/store/gamification/useGamificationStore'
 
 type Props = {
   userProfile: UserProfileType
-  badges: { earned: boolean }[]
 }
 
-export const StatsOverview = ({ userProfile, badges }: Props) => {
-  console.log({ userProfile, badges })
+export const StatsOverview = ({ userProfile }: Props) => {
+  const { stats: gamificationStats } = useGamificationStore()
+
   return (
     <div className='grid md:grid-cols-4 gap-4'>
       <Card>
@@ -52,22 +53,27 @@ export const StatsOverview = ({ userProfile, badges }: Props) => {
             <span className='text-sm text-muted-foreground'>Best Streak</span>
           </div>
           <div className='text-2xl font-bold text-primary'>
-            {userProfile.streak_days} days
+            {gamificationStats?.longest_streak ?? userProfile.streak_days} days
           </div>
-          <p className='text-sm mt-1 text-muted-foreground'>current streak</p>
+          <p className='text-sm mt-1 text-muted-foreground'>
+            current:{' '}
+            {gamificationStats?.current_streak ?? userProfile.streak_days}
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className=''>
           <div className='flex items-center gap-3 mb-2'>
-            <Trophy className='w-5 h-5 text-yellow-600 dark:text-yellow-400' />
-            <span className='text-sm text-muted-foreground'>Badges</span>
+            <Star className='w-5 h-5 text-yellow-600 dark:text-yellow-400' />
+            <span className='text-sm text-muted-foreground'>Level</span>
           </div>
           <div className='text-2xl font-bold text-primary'>
-            {badges.filter((b) => b.earned).length}/{badges.length}
+            {gamificationStats?.level ?? userProfile.level ?? 1}
           </div>
-          <p className='text-sm mt-1 text-muted-foreground'>earned</p>
+          <p className='text-sm mt-1 text-muted-foreground'>
+            {gamificationStats?.xp.toLocaleString() ?? 0} total XP
+          </p>
         </CardContent>
       </Card>
     </div>

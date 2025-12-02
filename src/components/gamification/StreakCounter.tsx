@@ -20,7 +20,7 @@ export function StreakCounter({
   }
 
   return (
-    <Card className='bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-100'>
+    <Card className='bg-gradient-to-br from-orange-50 to-yellow-50 border-orange-100 dark:from-orange-900/10 dark:to-yellow-900/10 dark:border-orange-900/30 dark:bg-zinc-900/50'>
       <CardContent className='p-6'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-3'>
@@ -37,20 +37,22 @@ export function StreakCounter({
             </motion.div>
             <div>
               <div className='flex items-baseline gap-2'>
-                <span className='text-3xl font-bold text-gray-900'>
+                <span className='text-3xl font-bold text-gray-900 dark:text-zinc-100'>
                   {currentStreak}
                 </span>
-                <span className='text-sm text-gray-600'>day streak</span>
+                <span className='text-sm text-gray-600 dark:text-zinc-400'>
+                  day streak
+                </span>
               </div>
               {longestStreak !== undefined && longestStreak > currentStreak && (
-                <p className='text-xs text-gray-500 mt-1'>
+                <p className='text-xs text-gray-500 mt-1 dark:text-zinc-500'>
                   Personal best: {longestStreak} days
                 </p>
               )}
             </div>
           </div>
           <div className='text-right'>
-            <p className='text-xs text-gray-600 font-medium'>
+            <p className='text-xs text-gray-600 font-medium dark:text-zinc-400'>
               {currentStreak === 0 && 'Start today!'}
               {currentStreak > 0 && currentStreak < 3 && 'Keep it up!'}
               {currentStreak >= 3 && currentStreak < 7 && 'On fire! 🔥'}

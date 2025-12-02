@@ -13,10 +13,10 @@ export function DailyGoalRing({ currentWords, goalWords }: DailyGoalRingProps) {
   const strokeDashoffset = circumference - (progress / 100) * circumference
 
   return (
-    <Card>
+    <Card className='dark:bg-zinc-900/50 dark:border-zinc-800'>
       <CardHeader>
-        <CardTitle className='flex items-center gap-2 text-lg'>
-          <Target className='w-5 h-5 text-indigo-600' />
+        <CardTitle className='flex items-center gap-2 text-lg dark:text-zinc-100'>
+          <Target className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
           Daily Goal
         </CardTitle>
       </CardHeader>
@@ -31,6 +31,7 @@ export function DailyGoalRing({ currentWords, goalWords }: DailyGoalRingProps) {
               fill='none'
               stroke='#e5e7eb'
               strokeWidth='8'
+              className='dark:stroke-zinc-700'
             />
             {/* Progress circle */}
             <motion.circle
@@ -56,17 +57,19 @@ export function DailyGoalRing({ currentWords, goalWords }: DailyGoalRingProps) {
           </svg>
           {/* Center text */}
           <div className='absolute inset-0 flex flex-col items-center justify-center'>
-            <span className='text-2xl font-bold text-gray-900'>
+            <span className='text-2xl font-bold text-gray-900 dark:text-zinc-100'>
               {Math.round(progress)}%
             </span>
-            <span className='text-xs text-gray-500'>complete</span>
+            <span className='text-xs text-gray-500 dark:text-zinc-400'>
+              complete
+            </span>
           </div>
         </div>
         <div className='text-center mt-4'>
-          <p className='text-sm text-gray-600'>
+          <p className='text-sm text-gray-600 dark:text-zinc-300'>
             {currentWords.toLocaleString()} / {goalWords.toLocaleString()} words
           </p>
-          <p className='text-xs text-gray-500 mt-1'>
+          <p className='text-xs text-gray-500 mt-1 dark:text-zinc-400'>
             {goalWords - currentWords > 0
               ? `${(goalWords - currentWords).toLocaleString()} words to go!`
               : 'Goal achieved! 🎉'}

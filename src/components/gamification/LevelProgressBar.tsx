@@ -21,16 +21,16 @@ export function LevelProgressBar({ currentXP, level }: LevelProgressBarProps) {
   )
 
   return (
-    <Card className='bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100'>
+    <Card className='bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100 dark:from-indigo-900/10 dark:to-purple-900/10 dark:border-indigo-900/30 dark:bg-zinc-900/50'>
       <CardContent className='p-6'>
         <div className='flex items-center justify-between mb-3'>
           <div className='flex items-center gap-2'>
-            <Trophy className='w-5 h-5 text-indigo-600' />
-            <span className='text-sm font-medium text-gray-700'>
+            <Trophy className='w-5 h-5 text-indigo-600 dark:text-indigo-400' />
+            <span className='text-sm font-medium text-gray-700 dark:text-zinc-200'>
               Level {level}
             </span>
           </div>
-          <span className='text-xs text-gray-600'>
+          <span className='text-xs text-gray-600 dark:text-zinc-400'>
             {xpIntoCurrentLevel.toLocaleString()} /{' '}
             {xpNeededForNextLevel.toLocaleString()} XP
           </span>
@@ -39,9 +39,9 @@ export function LevelProgressBar({ currentXP, level }: LevelProgressBarProps) {
           initial={{ width: 0 }}
           animate={{ width: '100%' }}
           transition={{ duration: 0.5 }}>
-          <Progress value={progressPercent} className='h-3' />
+          <Progress value={progressPercent} className='h-3 dark:bg-zinc-700' />
         </motion.div>
-        <p className='text-xs text-gray-500 mt-2 text-center'>
+        <p className='text-xs text-gray-500 mt-2 text-center dark:text-zinc-500'>
           {progressPercent >= 100
             ? 'Ready to level up! 🎉'
             : `${Math.round(xpNeededForNextLevel - xpIntoCurrentLevel).toLocaleString()} XP to level ${level + 1}`}
