@@ -541,6 +541,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_level: { Args: { total_xp: number }; Returns: number }
+      calculate_session_xp: {
+        Args: {
+          comprehension_pct: number
+          duration_seconds: number
+          words_read: number
+        }
+        Returns: number
+      }
+      check_and_unlock_achievements: {
+        Args: { uid: string }
+        Returns: {
+          achievement_id: string
+          just_unlocked: boolean
+        }[]
+      }
+      get_words_read_today: { Args: { uid: string }; Returns: number }
       update_avg_scores: { Args: { uid: string }; Returns: Json }
     }
     Enums: {

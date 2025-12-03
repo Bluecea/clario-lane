@@ -5,3 +5,4 @@ export * from "./fetchPlans";
 export * from "./fetchCountry";
 export * from "./fetchPassage";
 export * from "./fetchPractices";
+export * from "./fetchWordsReadToday";

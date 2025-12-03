@@ -70,10 +70,6 @@ export function RouteComponent() {
     { id: 3, title: 'Take comprehension quiz', completed: false, xp: 30 },
   ]
 
-  // Daily goal: 1000 words (configurable later)
-  const dailyGoalWords = 1000
-  const wordsReadToday = stats?.total_words_read ?? 0 // This should be tracked per day, but for now using total
-
   return (
     <motion.div
       initial={{ y: 40, opacity: 0 }}
@@ -95,8 +91,8 @@ export function RouteComponent() {
         }}
         progress={null}
         session={{
-          streak: userProfile.streak_days!,
-          total: userProfile.total_sessions!,
+          streak: userProfile.streak_days || 0,
+          total: userProfile.total_sessions || 0,
         }}
       />
 
@@ -108,10 +104,7 @@ export function RouteComponent() {
             currentStreak={stats.current_streak}
             longestStreak={stats.longest_streak}
           />
-          <DailyGoalRing
-            currentWords={wordsReadToday}
-            goalWords={dailyGoalWords}
-          />
+          <DailyGoalRing />
         </div>
       )}
 

@@ -155,7 +155,7 @@ async function handleCreateSession(
     const vettedData: SessionData = validationResult.data;
 
     const { data: user, error } = await client.from("users").select(
-      "id, total_sessions, streak_days, xp_earned, current_wpm, current_comprehension_score, last_active_date",
+      "id, total_sessions, streak_days, last_active_date",
     ).eq("id", userId).single();
 
     if (error) throw error;
@@ -163,7 +163,11 @@ async function handleCreateSession(
       return jsonResponse({ success: false, message: "User not found" }, 404);
     }
 
-    // Insert practice session with the authenticated user's ID
+    // Get current user_stats
+    const { data: currentStats } = await client.from("user_stats").select("*")
+      .eq("user_id", userId).single();
+
+    // Insert practice session
     const res = await client.from("practice_sessions").insert({
       ...vettedData,
       user_id: userId,
@@ -171,15 +175,35 @@ async function handleCreateSession(
 
     if (res.error) throw res.error;
 
-    // Update average scores
-    const { error: avgError } = await client.rpc(
-      "update_avg_scores",
+    // Calculate XP for this session using new function
+    const { data: xpData, error: xpError } = await client.rpc(
+      "calculate_session_xp",
       {
-        uid: userId,
+        words_read: Math.round(vettedData.total_words),
+        duration_seconds: Math.round(vettedData.duration),
+        comprehension_pct: vettedData.comprehension,
       },
     );
 
-    if (avgError) throw avgError;
+    if (xpError) throw xpError;
+    const sessionXp = xpData as number;
+
+    // Calculate new totals (ensure integers for database)
+    const newTotalXp = (currentStats?.xp || 0) + sessionXp;
+    const newTotalWords = Math.round(
+      (currentStats?.total_words_read || 0) + vettedData.total_words,
+    );
+    const newTotalTime = Math.round(
+      (currentStats?.total_time_seconds || 0) + vettedData.duration,
+    );
+
+    // Calculate new level
+    const { data: newLevel, error: levelError } = await client.rpc(
+      "calculate_level",
+      { total_xp: newTotalXp },
+    );
+
+    if (levelError) throw levelError;
 
     // Update streak
     const streakTracker = updateStreak(
@@ -187,15 +211,55 @@ async function handleCreateSession(
       user.streak_days!,
     );
 
+    // Update user last_active_date and streak FIRST
     await client.from("users").update({
-      total_sessions: (user.total_sessions! + 1) || 1,
       last_active_date: streakTracker.date.toISOString(),
       streak_days: streakTracker.streak,
     }).eq("id", userId);
 
+    // Update user_stats with new values
+    await client.from("user_stats").upsert({
+      user_id: userId,
+      xp: newTotalXp,
+      level: newLevel as number,
+      current_streak: streakTracker.streak,
+      longest_streak: Math.max(
+        streakTracker.streak,
+        currentStats?.longest_streak || 0,
+      ),
+      last_activity_date: streakTracker.date.toISOString().split("T")[0],
+      total_words_read: newTotalWords,
+      total_time_seconds: newTotalTime,
+    });
+
+    // Update average scores and total_sessions in users table
+    // This must run AFTER the session is inserted so the count is correct
+    const { error: avgError } = await client.rpc(
+      "update_avg_scores",
+      { uid: userId },
+    );
+
+    if (avgError) throw avgError;
+
+    // Check and unlock achievements
+    const { data: newAchievements, error: achError } = await client.rpc(
+      "check_and_unlock_achievements",
+      { uid: userId },
+    );
+
+    if (achError) {
+      console.error("Achievement check error:", achError);
+      // Don't fail the whole request if achievement check fails
+    }
+
     return jsonResponse({
       success: true,
       message: "Session successfully recorded",
+      data: {
+        xp_gained: sessionXp,
+        new_level: newLevel,
+        new_achievements: newAchievements || [],
+      },
     });
   } catch (error) {
     console.log(error);

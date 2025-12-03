@@ -1,14 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components'
 import { Target } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useQuery } from '@tanstack/react-query'
+import { fetchWordsReadToday } from '@/integration'
+import { supabaseService } from '~supabase/clientServices'
+import { useEffect, useState } from 'react'
 
-interface DailyGoalRingProps {
-  currentWords: number
-  goalWords: number
-}
+const DAILY_GOAL_WORDS = 1000 // TODO: Make this configurable per user
 
-export function DailyGoalRing({ currentWords, goalWords }: DailyGoalRingProps) {
-  const progress = Math.min((currentWords / goalWords) * 100, 100)
+export function DailyGoalRing() {
+  const [userId, setUserId] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    supabaseService.getSession().then((session) => {
+      setUserId(session?.user?.id)
+    })
+  }, [])
+
+  const { data: currentWords = 0 } = useQuery(fetchWordsReadToday(userId))
+
+  const progress = Math.min((currentWords / DAILY_GOAL_WORDS) * 100, 100)
   const circumference = 2 * Math.PI * 45 // radius = 45
   const strokeDashoffset = circumference - (progress / 100) * circumference
 
@@ -67,11 +78,12 @@ export function DailyGoalRing({ currentWords, goalWords }: DailyGoalRingProps) {
         </div>
         <div className='text-center mt-4'>
           <p className='text-sm text-gray-600 dark:text-zinc-300'>
-            {currentWords.toLocaleString()} / {goalWords.toLocaleString()} words
+            {currentWords.toLocaleString()} /{' '}
+            {DAILY_GOAL_WORDS.toLocaleString()} words
           </p>
           <p className='text-xs text-gray-500 mt-1 dark:text-zinc-400'>
-            {goalWords - currentWords > 0
-              ? `${(goalWords - currentWords).toLocaleString()} words to go!`
+            {DAILY_GOAL_WORDS - currentWords > 0
+              ? `${(DAILY_GOAL_WORDS - currentWords).toLocaleString()} words to go!`
               : 'Goal achieved! 🎉'}
           </p>
         </div>

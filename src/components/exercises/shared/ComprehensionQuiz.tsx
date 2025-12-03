@@ -96,6 +96,16 @@ export function ComprehensionQuiz() {
               }
             }
 
+            // Invalidate queries to refresh dashboard stats
+            await queryClient.invalidateQueries({ queryKey: ['user_profile'] })
+            await queryClient.invalidateQueries({ queryKey: ['progress_data'] })
+            await queryClient.invalidateQueries({
+              queryKey: ['practice_sessions'],
+            })
+            await queryClient.invalidateQueries({
+              queryKey: ['words-read-today'],
+            })
+
             updateStore(payload)
           },
           onError: (error) => {
