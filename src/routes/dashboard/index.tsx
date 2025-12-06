@@ -2,11 +2,12 @@ import {
   OverviewStats,
   ProgressChart,
   GoalTrackerCard,
-  DailyPracticeCard,
+  // DailyPracticeCard,
   OverviewPending,
   DailyGoalRing,
   StreakCounter,
   LevelProgressBar,
+  Button,
 } from '@/components'
 import { getBadges } from '@/lib'
 import { useQuery } from '@tanstack/react-query'
@@ -14,6 +15,7 @@ import { useGamification } from '@/hooks'
 
 import {
   createFileRoute,
+  Link,
   redirect,
   useRouteContext,
 } from '@tanstack/react-router'
@@ -59,16 +61,16 @@ export function RouteComponent() {
   )
   const improvement = userProfile.current_wpm! - userProfile.baseline_wpm!
 
-  const todaysTasks = [
-    {
-      id: 1,
-      title: 'Complete daily reading exercise',
-      completed: false,
-      xp: 25,
-    },
-    { id: 2, title: 'Practice word chunking drill', completed: true, xp: 20 },
-    { id: 3, title: 'Take comprehension quiz', completed: false, xp: 30 },
-  ]
+  // const todaysTasks = [
+  //   {
+  //     id: 1,
+  //     title: 'Complete daily reading exercise',
+  //     completed: false,
+  //     xp: 25,
+  //   },
+  //   { id: 2, title: 'Practice word chunking drill', completed: true, xp: 20 },
+  //   { id: 3, title: 'Take comprehension quiz', completed: false, xp: 30 },
+  // ]
 
   return (
     <motion.div
@@ -118,9 +120,9 @@ export function RouteComponent() {
 
       <div className='grid md:grid-cols-2 gap-6'>
         {/* Today's Tasks */}
-        {todaysTasks.length ? (
+        {/* {todaysTasks.length ? (
           <DailyPracticeCard todaysTasks={todaysTasks} />
-        ) : null}
+        ) : null} */}
 
         {/* Goal Tracker */}
         <GoalTrackerCard
@@ -133,6 +135,12 @@ export function RouteComponent() {
           streak_days={userProfile.streak_days || 0}
           total_sessions={userProfile.total_sessions || 0}
         />
+
+        <div className='flex justify-center items-center bg-gradient-to-r from-primary/10 to-secondary/10 rounded-md p-2'>
+          <Button size={'lg'} asChild>
+            <Link to='/dashboard/practice'>Start reading</Link>
+          </Button>
+        </div>
       </div>
     </motion.div>
   )

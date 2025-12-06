@@ -7,6 +7,7 @@ import { PracticeStep } from '@/lib'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchPassageKey, sessionMutation } from '@/integration'
 import { fetchUserStats } from '@/integration/queries/fetchUserStats'
+import { supabaseService } from '~supabase/clientServices'
 
 import type { PassageResponse } from '@/types'
 import { useParams } from '@tanstack/react-router'
@@ -39,7 +40,7 @@ export function ComprehensionQuiz() {
     fetchPassageKey,
   ]) as PassageResponse
 
-  const { mutate } = useMutation(sessionMutation)
+  const { mutate, status: mutationStatus } = useMutation(sessionMutation)
   const {
     stats: currentStats,
     openVictoryModal,
@@ -73,44 +74,70 @@ export function ComprehensionQuiz() {
         },
         {
           onSuccess: async (response: any) => {
-            // Fetch updated stats to calculate XP gained and check for level up
-            const newStats = await queryClient.fetchQuery(
-              fetchUserStats(currentStats?.user_id)
-            )
+            // Get user ID from current stats or auth
+            let userId = currentStats?.user_id
+            if (!userId) {
+              const {
+                data: { user },
+              } = await supabaseService.sp.auth.getUser()
+              userId = user?.id
+            }
 
-            const newAchievementsData = response?.data?.new_achievements || []
-            const { achievements: allAchievements } =
-              useGamificationStore.getState()
+            if (userId) {
+              // Fetch updated stats to calculate XP gained and check for level up
+              const newStats = await queryClient.fetchQuery(
+                fetchUserStats(userId)
+              )
 
-            const newAchievementsWithTitles = newAchievementsData.map(
-              (na: any) => {
-                const ach = allAchievements.find(
-                  (a) => a.id === na.achievement_id
-                )
-                return {
-                  achievement_id: na.achievement_id,
-                  title: ach?.title || na.achievement_id,
+              const newAchievementsData = response?.data?.new_achievements || []
+              const { achievements: allAchievements } =
+                useGamificationStore.getState()
+
+              const newAchievementsWithTitles = newAchievementsData.map(
+                (na: any) => {
+                  const ach = allAchievements.find(
+                    (a) => a.id === na.achievement_id
+                  )
+                  return {
+                    achievement_id: na.achievement_id,
+                    title: ach?.title || na.achievement_id,
+                  }
                 }
-              }
-            )
+              )
 
-            if (newStats && currentStats) {
-              const xpGained = newStats.xp - currentStats.xp
-              const isLevelUp = newStats.level > currentStats.level
+              // Use response data if stats fetch fails or is delayed
+              const xpGained =
+                response?.data?.data?.xp_gained ||
+                (newStats && currentStats ? newStats.xp - currentStats.xp : 0)
+              const currentLevel =
+                response?.data?.data?.new_level || newStats?.level || 1
+              const currentXP = newStats?.xp || 0
+              const isLevelUp =
+                response?.data?.data?.new_level > (currentStats?.level || 1) ||
+                (newStats &&
+                  currentStats &&
+                  newStats.level > currentStats.level)
 
               openVictoryModal({
                 xpGained: xpGained > 0 ? xpGained : 0,
                 wordsRead: rest.wordsRead!,
                 timeSpentSeconds: rest.duration!,
-                currentLevel: newStats.level,
-                currentXP: newStats.xp,
-                isLevelUp,
+                currentLevel,
+                currentXP,
+                isLevelUp: !!isLevelUp,
                 newAchievements: newAchievementsWithTitles,
               })
 
               if (isLevelUp) {
-                openLevelUpModal(newStats.level)
+                openLevelUpModal(currentLevel)
               }
+
+              // Update store with new stats if available
+              if (newStats) {
+                useGamificationStore.getState().setStats(newStats)
+              }
+            } else {
+              // Could not determine user ID for stats update
             }
 
             // Invalidate queries to refresh dashboard stats
@@ -215,8 +242,15 @@ export function ComprehensionQuiz() {
       {/* Next Button */}
       {showResult && (
         <div className='flex justify-end'>
-          <Button onClick={handleNext} size='lg'>
-            {isLastQuestion ? 'Finish Quiz' : 'Next Question'}
+          <Button
+            onClick={handleNext}
+            size='lg'
+            disabled={mutationStatus === 'pending'}>
+            {mutationStatus === 'pending'
+              ? 'Submitting...'
+              : isLastQuestion
+                ? 'Finish Quiz'
+                : 'Next Question'}
           </Button>
         </div>
       )}

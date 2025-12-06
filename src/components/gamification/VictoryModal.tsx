@@ -113,7 +113,8 @@ export function VictoryModal({
             <div className='bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-lg text-center'>
               <Clock className='w-6 h-6 mx-auto mb-2 text-blue-500 dark:text-blue-400' />
               <div className='text-xl font-bold text-gray-900 dark:text-zinc-100'>
-                {Math.floor(timeSpentSeconds / 60)}m {timeSpentSeconds % 60}s
+                {Math.floor(timeSpentSeconds / 60)}m{' '}
+                {String(timeSpentSeconds % 60).padStart(2, '0')}s
               </div>
               <div className='text-xs text-gray-500 dark:text-zinc-400'>
                 Time Focused

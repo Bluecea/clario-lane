@@ -116,7 +116,7 @@ export const Results = () => {
       </div>
 
       <ConfettiComponent
-        particleCount={comprehension * 10}
+        particleCount={comprehension * 6}
         effectCount={Math.round(comprehension / 20)}
       />
     </>
