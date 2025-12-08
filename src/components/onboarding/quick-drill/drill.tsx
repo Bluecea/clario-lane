@@ -1,50 +1,52 @@
-import { AnimatePresence, motion } from 'motion/react'
-import { Card, CardContent, Progress } from '@/components'
-import { DRILL_WORDS } from './words'
+import { motion } from 'motion/react'
+import { Card } from '@/components/ui/card'
+import { DRILL_WORDS } from './constants'
 
 type Props = {
   currentIndex: number
 }
 
 export function Drill({ currentIndex }: Props) {
+  const currentWord = DRILL_WORDS[currentIndex]
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className='md:min-w-2xl flex-1'>
-      <div className='mb-8'>
-        <Progress
-          value={(currentIndex / DRILL_WORDS.length) * 100}
-          className='h-2'
-        />
-        <p className='text-center text-sm  mt-2'>
-          Group {currentIndex + 1} of {DRILL_WORDS.length}
-        </p>
-      </div>
+    <div className='w-full max-w-2xl mx-auto'>
+      <motion.div
+        key={currentWord}
+        initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
+        className='flex flex-col items-center justify-center min-h-[400px]'>
+        <Card className='relative w-full aspect-square md:aspect-video flex items-center justify-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border-2 border-primary/10 shadow-2xl overflow-hidden'>
+          {/* Focus target lines */}
+          <div className='absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none'>
+            <div className='w-full h-px bg-primary absolute' />
+            <div className='h-full w-px bg-primary absolute' />
+          </div>
 
-      <Card className='min-h-[300px] w-full flex items-center justify-center bg-card'>
-        <CardContent>
-          <AnimatePresence mode='wait'>
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.2 }}
-              transition={{ duration: 0.3 }}
-              className='flex gap-8 justify-center'>
-              {DRILL_WORDS[currentIndex]?.map((word) => (
-                <span key={word} className='text-2xl lg:text-4xl '>
-                  {word}
-                </span>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </CardContent>
-      </Card>
+          <h2 className='text-5xl md:text-7xl font-black tracking-tight text-center bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/70'>
+            {currentWord}
+          </h2>
 
-      <p className='text-center  mt-6'>
-        Focus on the center word and see all three at once
-      </p>
-    </motion.div>
+          <div className='absolute bottom-6 left-1/2 -translate-x-1/2'>
+            <p className='text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground/50'>
+              Focus on center
+            </p>
+          </div>
+        </Card>
+
+        <div className='mt-8 max-w-sm w-full h-1 bg-secondary rounded-full overflow-hidden'>
+          <motion.div
+            className='h-full bg-primary'
+            initial={{ width: 0 }}
+            animate={{
+              width: `${((currentIndex + 1) / DRILL_WORDS.length) * 100}%`,
+            }}
+            transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          />
+        </div>
+      </motion.div>
+    </div>
   )
 }

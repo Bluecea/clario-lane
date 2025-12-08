@@ -1,59 +1,99 @@
-import { Award, Sparkles } from 'lucide-react'
+import { ArrowRight, TrendingUp, Zap } from 'lucide-react'
 import { motion } from 'motion/react'
-import { Button, Card, CardContent, ConfettiComponent } from '@/components'
+import { Button } from '@/components/ui/button'
 import { useOnboardingFlow } from '@/store'
+import { StepCard } from '../layout'
 
 type Props = {
   improvement: number
 }
+
 export function Result({ improvement }: Props) {
   const { update, current_step } = useOnboardingFlow()
 
+  const onContinue = () => {
+    update({ current_step: current_step + 1 })
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className='max-w-2xl mx-auto text-center'>
-      <Sparkles className='w-16 h-16 text-yellow-500 mx-auto mb-4' />
-      <h2 className='mb-4 text-primary'>Fantastic Work!</h2>
-      <p className=' mb-8'>You just completed your first speed reading drill</p>
+    <StepCard title='Drill Complete!' className='text-center'>
+      <div className='flex flex-col items-center gap-8'>
+        {/* Animated Score Circle */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+          className='relative w-40 h-40 flex items-center justify-center'>
+          <div className='absolute inset-0 rounded-full bg-linear-to-tr from-green-500/20 to-emerald-500/20 animate-pulse-slow' />
+          <svg className='w-full h-full transform -rotate-90'>
+            <circle
+              cx='80'
+              cy='80'
+              r='70'
+              stroke='currentColor'
+              strokeWidth='8'
+              fill='transparent'
+              className='text-secondary'
+            />
+            <motion.circle
+              cx='80'
+              cy='80'
+              r='70'
+              stroke='currentColor'
+              strokeWidth='8'
+              fill='transparent'
+              className='text-green-500'
+              strokeDasharray='440'
+              strokeDashoffset='440'
+              initial={{ strokeDashoffset: 440 }}
+              animate={{ strokeDashoffset: 440 - (440 * 100) / 100 }} // Full circle for completion
+              transition={{ duration: 1.5, ease: 'easeOut', delay: 0.5 }}
+            />
+          </svg>
+          <div className='absolute inset-0 flex flex-col items-center justify-center text-green-600 dark:text-green-400'>
+            <TrendingUpClassName className='w-8 h-8 mb-1' />
+            <span className='text-3xl font-bold'>Good!</span>
+          </div>
+        </motion.div>
 
-      <Card className='mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 dark:border-background dark:from-green-900 dark:to-emerald-950'>
-        <CardContent>
-          <div className='text-5xl mb-2 text-green-600'>+{improvement}%</div>
-          <p className=''>Faster than your baseline!</p>
-          <p className='text-sm  mt-3'>
-            This is just the beginning. With consistent practice, you'll see
-            even bigger improvements.
-          </p>
-        </CardContent>
-      </Card>
+        <div className='grid grid-cols-2 gap-4 w-full'>
+          <div className='p-4 rounded-xl bg-orange-500/5 border border-orange-500/10 flex flex-col items-center gap-2'>
+            <Zap className='w-5 h-5 text-orange-500' />
+            <div className='text-2xl font-bold text-orange-600 dark:text-orange-400'>
+              {Math.round(improvement)}%
+            </div>
+            <div className='text-xs text-muted-foreground font-medium uppercase tracking-wider'>
+              Faster
+            </div>
+          </div>
+          <div className='p-4 rounded-xl bg-blue-500/5 border border-blue-500/10 flex flex-col items-center gap-2'>
+            <TrendingUp className='w-5 h-5 text-blue-500' />
+            <div className='text-2xl font-bold text-blue-600 dark:text-blue-400'>
+              Ready
+            </div>
+            <div className='text-xs text-muted-foreground font-medium uppercase tracking-wider'>
+              Status
+            </div>
+          </div>
+        </div>
 
-      <div className='grid md:grid-cols-2 gap-4 pb-6'>
-        <Card>
-          <CardContent>
-            <Award className='w-8 h-8 text-yellow-500 mx-auto mb-2' />
-            <h3 className='mb-1'>Badge Earned!</h3>
-            <p className='text-sm '>First Drill Complete</p>
-          </CardContent>
-        </Card>
+        <p className='text-muted-foreground max-w-md mx-auto'>
+          Your eyes are warmed up and ready. Let's set up your daily habit plan
+          to keep this momentum going.
+        </p>
 
-        <Card>
-          <CardContent>
-            <div className='text-3xl mb-2 text-primary'>+50 XP</div>
-            <p className='text-sm '>You're on your way to Level 2</p>
-          </CardContent>
-        </Card>
+        <Button
+          onClick={onContinue}
+          size='lg'
+          className='w-full h-12 text-lg group bg-primary hover:bg-primary/90'>
+          Continue
+          <ArrowRight className='ml-2 w-4 h-4 transition-transform group-hover:translate-x-1' />
+        </Button>
       </div>
-
-      <Button
-        onClick={() => update({ current_step: current_step + 1 })}
-        size='lg'
-        className='w-full'>
-        Continue
-      </Button>
-
-      <ConfettiComponent particleCount={improvement} />
-    </motion.div>
+    </StepCard>
   )
+}
+
+function TrendingUpClassName({ className }: { className?: string }) {
+  return <TrendingUp className={className} />
 }

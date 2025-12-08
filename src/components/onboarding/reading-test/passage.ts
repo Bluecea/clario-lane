@@ -1,5 +1,7 @@
 export const PASSAGE = {
-	text: `The human brain processes visual information remarkably quickly. When you read, your eyes don't move smoothly across the page. Instead, they make rapid jumps called saccades, pausing briefly to absorb words. Most people fixate on every word, but skilled readers learn to recognize word patterns and chunks, allowing them to process multiple words at once.
+	title: "The Science of Speed Reading",
+	text:
+		`The human brain processes visual information remarkably quickly. When you read, your eyes don't move smoothly across the page. Instead, they make rapid jumps called saccades, pausing briefly to absorb words. Most people fixate on every word, but skilled readers learn to recognize word patterns and chunks, allowing them to process multiple words at once.
 
 Speed reading isn't just about moving your eyes faster—it's about training your brain to process information more efficiently. Traditional reading habits, like subvocalization (mentally pronouncing each word) and regression (re-reading passages), can significantly slow you down. By eliminating these habits and expanding your visual span, you can potentially double or triple your reading speed while maintaining comprehension.
 

@@ -1,32 +1,50 @@
-import { Timer } from 'lucide-react'
 import { motion } from 'motion/react'
-import { Button, Card } from '@/components'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { PASSAGE } from './passage'
 import { useOnboardingReadingTest } from './useOnboardingReadingTest'
 
 export function Reading() {
   const { handleFinishReading } = useOnboardingReadingTest()
+
   return (
-    <Card className='w-full max-w-3xl p-8'>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <div className='mb-6 flex items-center justify-between'>
-          <h3>Read the following passage</h3>
-          <div className='text-sm text-muted-foreground flex items-center gap-2'>
-            <Timer className='w-4 h-4' />
-            <span>Timer running...</span>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className='w-full max-w-3xl mx-auto'>
+      <div className='sticky top-4 z-50 mb-8 flex justify-center'>
+        <div className='px-4 py-1.5 rounded-full bg-black/80 text-white backdrop-blur-md text-xs font-medium tracking-wide shadow-lg border border-white/10 flex items-center gap-2'>
+          <span className='w-2 h-2 rounded-full bg-red-500 animate-pulse' />
+          Timer Running
+        </div>
+      </div>
+
+      <Card className='p-8 md:p-12 shadow-2xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-border/50'>
+        <motion.div
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.5 }}>
+          <h2 className='text-2xl font-bold mb-8 text-center text-primary'>
+            {PASSAGE.title}
+          </h2>
+          <div className='prose prose-lg dark:prose-invert max-w-none text-lg leading-relaxed tracking-wide text-foreground/90 font-serif'>
+            {PASSAGE.text.split('\n\n').map((paragraph, i) => (
+              <p key={i} className='mb-6 last:mb-0'>
+                {paragraph}
+              </p>
+            ))}
           </div>
-        </div>
-        <div className='prose prose-lg max-w-none mb-8 leading-relaxed'>
-          {PASSAGE.text.split('\n\n').map((paragraph) => (
-            <p key={paragraph} className='mb-4'>
-              {paragraph}
-            </p>
-          ))}
-        </div>
-        <Button size='lg' onClick={handleFinishReading} className='w-full'>
+        </motion.div>
+      </Card>
+
+      <div className='mt-8 text-center sticky bottom-8'>
+        <Button
+          size='lg'
+          onClick={handleFinishReading}
+          className='min-w-[250px] h-14 text-lg font-semibold bg-linear-to-r from-primary to-blue-600 shadow-xl hover:scale-105 transition-all duration-300'>
           I'm Done Reading
         </Button>
-      </motion.div>
-    </Card>
+      </div>
+    </motion.div>
   )
 }
