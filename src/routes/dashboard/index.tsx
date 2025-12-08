@@ -25,7 +25,6 @@ export const Route = createFileRoute('/dashboard/')({
 })
 
 export function RouteComponent() {
-  // const userProfile = useUserProfileStore()
   const userProfile = useRouteContext({ from: '__root__' }).user
   const { data } = useQuery({
     queryKey: ['progress_data'],

@@ -1,4 +1,6 @@
+// deno-lint-ignore-file no-explicit-any
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// import type { Context } from "npm:hono"; // Removed due to missing package
 import { Hono } from "npm:hono";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "jsr:@zod/zod";
@@ -60,7 +62,7 @@ function updateStreak(lastDate: string | null, currentStreak: number) {
 }
 
 // Middleware to create request-scoped Supabase client
-app.use("/practice/*", async (c, next) => {
+app.use("/practice/*", async (c: any, next: any) => {
   const authHeader = c.req.header("Authorization");
 
   if (!authHeader) {
@@ -92,7 +94,7 @@ app.use("/practice/*", async (c, next) => {
 });
 
 // GET /practice - Get all exercises
-app.get("/practice", async (c) => {
+app.get("/practice", async (c: any) => {
   const supabaseClient = c.get("supabase");
 
   try {
@@ -114,7 +116,7 @@ app.get("/practice", async (c) => {
 });
 
 // GET /practice/passage - Get a random passage
-app.get("/practice/passage", async (c) => {
+app.get("/practice/passage", async (c: any) => {
   const supabaseClient = c.get("supabase");
 
   try {
@@ -161,7 +163,7 @@ app.get("/practice/passage", async (c) => {
 });
 
 // POST /practice/session - Create a session
-app.post("/practice/session", async (c) => {
+app.post("/practice/session", async (c: any) => {
   const supabaseClient = c.get("supabase");
   const user = c.get("user");
 
@@ -262,13 +264,71 @@ app.post("/practice/session", async (c) => {
       total_time_seconds: newTotalTime,
     };
 
-    console.log({ user_stats_update });
-
     // Update user_stats
     const { error: statsError } = await supabaseClient.from("user_stats")
       .upsert(user_stats_update);
 
     if (statsError) throw statsError;
+
+    // ---------------------------------------
+    // Update user quest progress based on session data
+    // Fetch all quests
+    const { data: allQuests, error: questsError } = await supabaseClient
+      .from("quests")
+      .select("id, type, target_metric, target_value");
+    if (questsError) throw questsError;
+
+    // Prepare upserts for user_quests
+    // Removed unused questUpserts mapping; progress will be handled in the loop below
+
+    // Process each quest upsert sequentially
+    for (const quest of allQuests) {
+      // Get existing progress
+      const { data: existing, error: _existingError } = await supabaseClient
+        .from("user_quests")
+        .select("current_value, is_completed")
+        .eq("user_id", user.id)
+        .eq("quest_id", quest.id)
+        .single();
+
+      if (_existingError) throw _existingError;
+
+      const currentValue = existing?.current_value ?? 0;
+      const wasCompleted = existing?.is_completed ?? false;
+      let increment = 0;
+      switch (quest.target_metric) {
+        case "words":
+          increment = Math.round(vettedData.total_words);
+          break;
+        case "minutes":
+          increment = Math.round(vettedData.duration / 60);
+          break;
+        case "sessions":
+          increment = 1;
+          break;
+        case "wpm":
+          increment = vettedData.wpm >= quest.target_value
+            ? quest.target_value
+            : 0;
+          break;
+        default:
+          increment = 0;
+      }
+      const newValue = currentValue + increment;
+      const isCompleted = newValue >= quest.target_value;
+      const upsertData = {
+        user_id: user.id,
+        quest_id: quest.id,
+        current_value: newValue,
+        is_completed: isCompleted,
+        updated_at: new Date().toISOString(),
+        claimed_at: wasCompleted && !isCompleted ? null : undefined,
+      };
+      await supabaseClient.from("user_quests").upsert(upsertData, {
+        onConflict: ["user_id", "quest_id"],
+      });
+    }
+    // ---------------------------------------
 
     // Update average scores and total_sessions
     const { error: avgError } = await supabaseClient.rpc(
@@ -285,7 +345,7 @@ app.post("/practice/session", async (c) => {
     );
 
     if (achError) {
-      console.error("Achievement check error:", achError);
+      throw achError;
     }
 
     return c.json({
