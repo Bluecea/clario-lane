@@ -7,12 +7,14 @@ import {
   StreakCounter,
   LevelProgressBar,
   QuestCard,
+  Button,
 } from '@/components'
 import { useQuery } from '@tanstack/react-query'
 import { useClaimQuest, useGamification } from '@/hooks'
 
 import {
   createFileRoute,
+  Link,
   redirect,
   useRouteContext,
 } from '@tanstack/react-router'
@@ -98,7 +100,11 @@ export function RouteComponent() {
           <DailyGoalRing />
         </div>
       )}
-
+      <div className='flex justify-center items-center bg-linear-to-r from-primary/10 to-secondary/10 rounded-md py-12'>
+        <Button size={'xl'} asChild>
+          <Link to='/dashboard/practice'>Start Practicing</Link>
+        </Button>
+      </div>
       {/* Progress Chart */}
       <ProgressChart
         title='Reading speed'
@@ -127,12 +133,6 @@ export function RouteComponent() {
           streak_days={stats?.current_streak}
           total_sessions={userProfile.total_sessions || 0}
         />
-
-        {/* <div className='flex justify-center items-center bg-linear-to-r from-primary/10 to-secondary/10 rounded-md p-2'>
-          <Button size={'lg'} asChild>
-            <Link to='/dashboard/practice'>Start reading</Link>
-          </Button>
-        </div> */}
       </div>
     </motion.div>
   )
