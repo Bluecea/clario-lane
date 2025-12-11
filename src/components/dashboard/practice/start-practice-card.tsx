@@ -89,7 +89,7 @@ export const StartPracticeCard = ({
             <Button
               asChild
               onClick={handleClick}
-              size='sm'
+              size='lg'
               className='w-full font-semibold group/btn relative overflow-hidden bg-primary/90 hover:bg-primary shadow-sm hover:shadow-md transition-all duration-300'>
               <Link to={`${route}/${practice.id}` as any}>
                 <span className='relative z-10 flex items-center justify-center gap-2'>

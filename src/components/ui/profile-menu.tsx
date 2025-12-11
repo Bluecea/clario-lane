@@ -54,10 +54,10 @@ export function ProfileMenu(props: Props) {
             <Link to='/dashboard/settings'>Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
+        {/* <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Link to='/dashboard'>Support</Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout} variant='destructive'>
           Log out
