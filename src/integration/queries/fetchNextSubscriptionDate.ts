@@ -10,6 +10,7 @@ export const fetchNextSubscriptionDate = queryOptions({
       "subscription/next-subscription-date",
       { method: "GET" },
     );
+    if (!data || !data.data) return null;
     return data.data.nextPaymentDate;
   },
   staleTime: "static",

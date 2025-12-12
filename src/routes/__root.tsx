@@ -2,7 +2,7 @@ import * as React from 'react'
 import {
   Outlet,
   createRootRouteWithContext,
-  useLocation,
+  // useLocation,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -12,10 +12,11 @@ import { Toaster } from 'sonner'
 import Navbar from '@/components/navbar'
 
 import {
-  Footer,
+  // Footer,
   PendingPage,
   SettingsProvider,
   FloatingActionButton,
+  Copyright,
 } from '@/components'
 import type { Session } from '@supabase/supabase-js'
 import { supabaseService } from '~supabase/clientServices'
@@ -53,14 +54,15 @@ export const Route = createRootRouteWithContext<RootRouteContext>()({
 })
 
 function RootComponent() {
-  const location = useLocation()
+  // const location = useLocation()
   return (
     <React.Fragment>
       <SettingsProvider>
         <Navbar />
         <Outlet />
         <FloatingActionButton />
-        {!location.pathname.startsWith('/dashboard') && <Footer />}
+        <Copyright />
+        {/* {!location.pathname.startsWith('/dashboard') && <Footer />} */}
         <Toaster position='top-center' richColors />
         <TanStackRouterDevtools position='bottom-left' />
         <ReactQueryDevtools position='bottom' initialIsOpen={false} />

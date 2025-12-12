@@ -1,10 +1,4 @@
-import {
-  BackButton,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  Copyright,
-} from '@/components'
+import { BackButton, Tabs, TabsList, TabsTrigger } from '@/components'
 import { useOnboardingFlow } from '@/store'
 import {
   createFileRoute,
@@ -27,14 +21,15 @@ export const Route = createFileRoute('/dashboard')({
 
     const response = await queryClient.fetchQuery(fetchNextSubscriptionDate)
 
-    const isSubscriptionExpired = new Date(response) < new Date()
-
     if (!session) {
       throw redirect({ to: '/auth' })
     }
 
     if (!user || !user?.onboarding_completed)
       throw redirect({ to: '/onboarding' })
+
+    if (!response) throw redirect({ to: '/pricing' })
+    const isSubscriptionExpired = new Date(response) < new Date()
 
     if (isSubscriptionExpired) {
       useOnboardingFlow.setState({ current_step: 7 })
@@ -117,7 +112,7 @@ function RouteComponent() {
           <Outlet />
         </AnimatePresence>
       </div>
-      <Copyright />
+      {/* <Copyright /> */}
 
       {/* Global Gamification Modals */}
       {victoryModal.data && (
