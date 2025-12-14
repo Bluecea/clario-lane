@@ -19,6 +19,7 @@ class SupabaseService {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth`,
         data: {
           displayName: name,
         },
