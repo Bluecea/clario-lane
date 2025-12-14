@@ -71,7 +71,7 @@ export const AuthValidationSchema = z.object({
   email: z.email(),
   password: z.string(),
   confirmPassword: z.string().optional(),
-  dateOfBirth: z.date().or(z.string()).optional(),
+  date_of_birth: z.date().or(z.string()).optional(),
 });
 export type AuthValidationSchema = z.infer<typeof AuthValidationSchema>;
 

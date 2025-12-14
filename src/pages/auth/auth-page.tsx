@@ -43,7 +43,7 @@ export default function AuthPage({
     defaultValues: {
       name: '',
       email: '',
-      dateOfBirth: '',
+      date_of_birth: '',
       password: '',
       confirmPassword: '',
     },
@@ -153,7 +153,7 @@ export default function AuthPage({
                     )}
                   />
                   <form.Field
-                    name='dateOfBirth'
+                    name='date_of_birth'
                     children={(field) => (
                       <Field>
                         <DatePicker field={field} />
