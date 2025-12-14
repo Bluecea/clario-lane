@@ -50,15 +50,15 @@ export default function AuthPage({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     validators: { onBlur: AuthValidationSchema },
-    onSubmit: async ({ value: { confirmPassword, ...rest } }) => {
+    onSubmit: async ({ value: { confirmPassword, password, ...rest } }) => {
       try {
         updateProfile({ ...rest })
 
         if (authState === 'signup') {
-          await supabaseService.signUp(rest.email, rest.password, rest.name)
+          await supabaseService.signUp(rest.email, password, rest.name)
         }
         if (authState === 'signin') {
-          await supabaseService.signIn(rest.email, rest.password)
+          await supabaseService.signIn(rest.email, password)
         }
         toast.success(successMessage)
       } catch (error) {
