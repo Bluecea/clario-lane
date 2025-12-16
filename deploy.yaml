@@ -1,0 +1,131 @@
+name: Deploy Vite App to Ubuntu 
+  
+on:
+  push:
+    branches: ["deploy_test"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.2 # Use a reliable SSH action
+        with:
+          host: ${{ secrets.INPUT_HOST }}      # e.g., your_server_ip
+          key: ${{ secrets.INPUT_KEY }} # The private SSH key of the user
+          username: ${{ secrets.INPUT_USERNAME }}  # e.g., ubuntu or root
+
+          script: |
+            mkdir test
+            cd test
+          # git clone https://github.com/giprim/clario-lane.git
+            echo 'Deployment successful to digital ocean'
+
+
+
+# name: Deploy Vite App to Ubuntu
+
+# on:
+#   push:
+#     branches: ["deploy_test"]
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       # - name: Setup Node
+#       #   uses: actions/setup-node@v3
+#       #   with:
+#       #     node-version: 20
+
+#       # - name: Install dependencies
+#       #   run: npm install
+      
+#       - name: Set up SSH keys and known hosts
+#         uses: webfactory/ssh-agent@v0.8.0
+#         with:
+#           ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+#           log-public-key: false
+
+#       - name: Deploy via SSH
+#         uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
+#         with:
+#           host: ${{ secrets.SERVER_HOST }}      # e.g., your_server_ip
+#           username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
+#           key: ${{ secrets.SERVER_SSH_KEY }} # The private SSH key for the user
+#           port: 22
+    
+#           # 🎯 The Fix: The commands in 'script' run on the remote server
+#           script: |
+#             cd /var/www
+#             # 'sudo' might not be needed if running as 'root' or if /var/www permissions are open
+#             sudo mkdir hello
+#             # Run other deployment steps here, e.g., git pull
+
+#       - name: Deploy
+#         run: |
+#           ssh -o StrictHostKeyChecking=no root@157.230.237.30
+#           cd /var/www && sudo mkdir hello
+#           # sudo cd /var/www
+#           # sudo mkdir hello
+#           # ssh -o StrictHostKeyChecking=no root@157.230.237.30
+#           # cd /var/www
+#           # sudo mkdir hello
+
+      # - name: Add Server Host Key to Known Hosts
+      #   run: |
+      #     # This command fetches the key and adds it to the known_hosts file
+      #     ssh-keyscan -H 157.230.237.30 >> ~/.ssh/known_hosts
+      #     # The IP used here MUST match the IP in your 'ssh root@...' command.
+
+      # - name: Inject environment variables
+      #   run: |
+      #     # echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env.production
+      #     # echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env.production
+      #     # echo "VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}" >> .env.production
+      #     # echo ${{ secrets.SERVER_USER }}
+      #     # ssh root@157.230.237.30 'ls -al'
+      #     mkdir -p /var/www/hello
+
+      # - name: Build The App
+      #   run: npm run build
+
+      # - name: Deploy to Ubuntu Server via SSH
+      #   uses: appleboy/ssh-action@v0.1.6
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SERVER_SSH_KEY }}
+      #     script: |
+      #       # sudo tcpdump -i any port 22
+      #       echo: ${{ secrets.SERVER_USER }}
+
+            # Variables
+            # APP_DIR=/var/www/html
+            # TEMP_DIR=/var/www/html-new
+
+            # mkdir -p $APP_DIR
+
+            # # Remove previous temp dir if exists
+            # rm -rf $TEMP_DIR
+
+            # # Copy new build
+            # mkdir -p $TEMP_DIR
+            # scp -r ./dist/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TEMP_DIR/
+
+            # # Swap directories for zero-downtime
+            # mv $APP_DIR $APP_DIR-old || true
+            # mv $TEMP_DIR $APP_DIR
+            # rm -rf $APP_DIR-old
+
+            # # Reload nginx to ensure any cache cleared
+            # sudo systemctl reload nginx
