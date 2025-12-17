@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy via SSH 
-        uses: appleboy/ssh-action@v0.1.2 # Use a reliable SSH action
+        uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
         with:
           host: ${{ secrets.SERVER_HOST }}      # e.g., your_server_ip
           key: ${{ secrets.SERVER_SSH_KEY }}    # The private SSH key of the user
@@ -51,8 +51,7 @@ jobs:
           script: |
             cd /var/www
             # 'sudo' might not be needed if running as 'root' or if /var/www permissions are open
-            sudo mkdir hello
-            # Run other deployment steps here, e.g., git pull
+            mkdir hello
             echo 'Deployment successful to digital ocean'
 
 
