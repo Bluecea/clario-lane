@@ -29,13 +29,13 @@ jobs:
       - name: Build The App
         run: npm run build
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
       - name: Deploy via SSH 
         uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
