@@ -53,7 +53,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "dist/*"
           target: "/var/www"
-          strip_components: 1
+          strip_components: 1 
 
       - name: Post-deployment commands
         uses: appleboy/ssh-action@v1.0.3
