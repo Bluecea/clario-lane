@@ -30,6 +30,7 @@ jobs:
         run: npm run build
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +45,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
           
           script: |
+            echo "Deploying the project..."
+            scp -r ./dist/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/html-new
             cd /var/www && sudo mkdir hello
             echo 'Build was successful to digital ocean'
 
