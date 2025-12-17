@@ -1,13 +1,13 @@
-name: Build and Deploy Clariolane to Server
-  
+name: Build and Deploy Clariolane
+
 on:
   push:
     branches: ["deploy_test"]
 
 jobs:
+  # JOB 1: Build the application
   build:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -20,14 +20,89 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Inject environment variables
-        run: |
-          export VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
-          export VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          export VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
-
       - name: Build The App
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_PAYSTACK_PUBLIC_KEY: ${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
+
+      # Save the 'dist' folder so the next job can use it
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-files
+          path: dist/
+
+  # JOB 2: Deploy to Server
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # This ensures deploy only runs if build succeeds
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-files
+          path: dist/
+
+      - name: Copy files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "dist/*"
+          target: "/var/www"
+          strip_components: 1
+
+      - name: Post-deployment commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            set -e
+            echo "Deployment successful to Digital Ocean"
+
+
+
+
+
+
+# name: Build and Deploy Clariolane to Server
+  
+# on:
+#   push:
+#     branches: ["deploy_test"]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+    
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 20
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Inject environment variables
+#         run: |
+#           export VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+#           export VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+#           export VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
+
+#       - name: Build The App
+#         run: npm run build
+
+
+
 
   # deploy:
   #   needs: build
@@ -37,20 +112,28 @@ jobs:
   #     - name: Checkout
   #       uses: actions/checkout@v3
 
-      - name: Deploy via SSH 
-        uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
-        with:
-          host: ${{ secrets.SERVER_HOST }}      # e.g., your_server_ip
-          key: ${{ secrets.SERVER_SSH_KEY }}    # The private SSH key of the user
-          username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
+
+
+
+      # - name: Deploy via SSH 
+      #   uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}      # e.g., your_server_ip
+      #     key: ${{ secrets.SERVER_SSH_KEY }}    # The private SSH key of the user
+      #     username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
           
-          script: |
-            set -e  # Exit immediately if a command fails
-            echo "Deploying the project..."
-            TEMP_DIR=/var/www
-            scp -r ./dist/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TEMP_DIR/
-            # cd /var/www && sudo mkdir hello
-            echo 'Build was successful to digital ocean'
+      #     script: |
+      #       set -e  # Exit immediately if a command fails
+      #       echo "Deploying the project..."
+      #       TEMP_DIR=/var/www
+      #       scp -r ./dist/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TEMP_DIR/
+      #       # cd /var/www && sudo mkdir hello
+      #       echo 'Build was successful to digital ocean'
+
+
+
+
+
 
       # - name: Deploy to Ubuntu Server via SSH
       #   uses: appleboy/ssh-action@v0.1.6
