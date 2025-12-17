@@ -25,27 +25,24 @@ jobs:
 
           script: |
             mkdir test
-          #   cd test
-          # # git clone https://github.com/giprim/clario-lane.git
-          #   echo 'Deployment successful to digital ocean'
+            cd test
+            git clone https://github.com/giprim/clario-lane.git
+            echo 'Deployment successful to digital ocean'
 
-  deploy:
-    runs-on: ubuntu-latest
+  # deploy: # Works
+  #   runs-on: ubuntu-latest
     
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install doctl
-        # uses: digitalocean/action-doctl@v2
-        # with:
-        #   token: ${{ secrets.DO_PAT }}
-        uses: jjst/action-digitalocean-deploy-app@v2
-        with:
-          token: ${{ secrets.DO_PAT }}
+  #     - name: Install doctl # Works
+  #       uses: jjst/action-digitalocean-deploy-app@v2
+  #       with:
+  #         token: ${{ secrets.DO_PAT }}
 
-      - name: Provision Droplet and deploy container
-        run: doctl compute droplet create test --image docker-18-04 --size s-1vcpu-1gb --region nyc1 --user-data-file deploy.sh --wait
+  #     - name: Provision Droplet and deploy container
+  #       run: doctl compute droplet create test --image docker-18-04 --size s-1vcpu-1gb --region nyc1 --user-data-file deploy.sh --wait
         
 
 
