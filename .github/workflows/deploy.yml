@@ -19,20 +19,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      
-      # - name: Set up SSH keys and known hosts
-      #   uses: webfactory/ssh-agent@v0.8.0
-      #   with:
-      #     ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
-      #     log-public-key: false
 
-      # - name: Deploy via SSH
-      #   uses: appleboy/ssh-action@v1.0.3 # Use a reliable SSH action
-      #   with:
-      #     host: ${{ secrets.SERVER_HOST }}      # e.g., your_server_ip
-      #     username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
-      #     key: ${{ secrets.SERVER_SSH_KEY }} # The private SSH key for the user
-      #     port: 22
+      - name: Inject environment variables
+        run: |
+          export VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
+          export VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          export VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}
+
+      - name: Build The App
+        run: npm run build
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,40 +44,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
           
           script: |
-            cd /var/www
-            # 'sudo' might not be needed if running as 'root' or if /var/www permissions are open
-            mkdir hello
-            echo 'Deployment successful to digital ocean'
-
-
-
-#       - name: Deploy
-#         run: |
-#           ssh -o StrictHostKeyChecking=no root@157.230.237.30
-#           cd /var/www && sudo mkdir hello
-#           # sudo cd /var/www
-#           # sudo mkdir hello
-#           # ssh -o StrictHostKeyChecking=no root@157.230.237.30
-#           # cd /var/www
-#           # sudo mkdir hello
-
-      # - name: Add Server Host Key to Known Hosts
-      #   run: |
-      #     # This command fetches the key and adds it to the known_hosts file
-      #     ssh-keyscan -H 157.230.237.30 >> ~/.ssh/known_hosts
-      #     # The IP used here MUST match the IP in your 'ssh root@...' command.
-
-      # - name: Inject environment variables
-      #   run: |
-      #     # echo "VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}" >> .env.production
-      #     # echo "VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}" >> .env.production
-      #     # echo "VITE_PAYSTACK_PUBLIC_KEY=${{ secrets.VITE_PAYSTACK_PUBLIC_KEY }}" >> .env.production
-      #     # echo ${{ secrets.SERVER_USER }}
-      #     # ssh root@157.230.237.30 'ls -al'
-      #     mkdir -p /var/www/hello
-
-      # - name: Build The App
-      #   run: npm run build
+            cd /var/www && sudo mkdir hello
+            echo 'Build was successful to digital ocean'
 
       # - name: Deploy to Ubuntu Server via SSH
       #   uses: appleboy/ssh-action@v0.1.6
