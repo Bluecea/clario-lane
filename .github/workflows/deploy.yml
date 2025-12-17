@@ -45,6 +45,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}  # e.g., ubuntu or root
           
           script: |
+            set -e  # Exit immediately if a command fails
             echo "Deploying the project..."
             TEMP_DIR=/var/www
             scp -r ./dist/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$TEMP_DIR/
