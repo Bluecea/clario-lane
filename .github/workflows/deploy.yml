@@ -63,6 +63,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             set -e
+            systemctl reload nginx
             echo "Deployment successful to Digital Ocean"
 
 
