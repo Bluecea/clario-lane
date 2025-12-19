@@ -2,7 +2,7 @@ name: Build and Deploy Clariolane
 
 on:
   push:
-    tags: [ 'release/v*.*.*' ]
+    tags: [ 'release-v*.*.*' ]
     # branches: [ "**" ]  # Uncomment this line to test in your feature branch
     # branches: ["clario-deployment"]
 
