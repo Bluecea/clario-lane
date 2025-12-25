@@ -1,4 +1,4 @@
-### PRE-INSTALLATIONS
+<img width="1370" height="885" alt="image" src="https://github.com/user-attachments/assets/e80fbca2-6a9e-47af-805e-9537324281a8" />### PRE-INSTALLATIONS
 1. Update and Upgrade 
 ```
 apt update && apt upgrade
@@ -596,3 +596,40 @@ What happens now: Any email sent to `clariolane@clariolane.com`, `support@clario
 <img width="1912" height="717" alt="Image" src="https://github.com/user-attachments/assets/e834b7d9-ea7a-4bf3-abe6-94c02c07f223" />
 
 4. `Email Signatures:` Ensure both emails have a consistent signature that includes your logo, website link, and perhaps a social media handle.
+
+### MAIL NAMESERVER ISSUES FOR CLARIOLANE
+Our Nameservers are from `DigitalOcean` and not `Namecheap`. For this reason, we are not using `Namecheap BasicDNS` to manage records, rather the `CustomDNS`. For us to be able to manage the `Mail Settings`, we need to either manage it from the mail settings in the `cPanel` which we don't have because we are hosting in `DigitalOcean` for total control, or transfer DNS back to `Namecheap BasicDNS` to manage the records and we can't do that and this is causing a blocker because mails don't get delivered to the `Private Mail` - `admin@clariolane.com` nor the `aliases`. <br><br>
+
+SENT from Gmail
+<img width="1905" height="326" alt="Image" src="https://github.com/user-attachments/assets/53b775db-93bb-4b3a-935a-05b8b4929971" />
+
+It wasn't received
+<img width="1905" height="586" alt="Image" src="https://github.com/user-attachments/assets/e7bab37f-18d7-4434-bf3c-fbdaa12429f1" />
+
+### FIX
+1. Go to Namecheap > `Private Email`
+<img width="1471" height="344" alt="image" src="https://github.com/user-attachments/assets/8bdad9d4-e95c-42b6-b38e-d046212df3a8" />
+
+2. Manage
+<img width="1471" height="397" alt="image" src="https://github.com/user-attachments/assets/a8252ec9-1b95-4ae9-9762-c07ff65f9957" />
+
+3. Setup exactly these DNS Records above in `Digital Ocean`
+<img width="1370" height="885" alt="image" src="https://github.com/user-attachments/assets/a1bc4dd0-7145-4025-9d73-8f77e07cf77e" />
+Record Type: `MX`
+```
+mx1.privateemail.com
+```
+Record Type: `MX`
+```
+mx2.privateemail.com
+```
+Record Type: `TXT`
+```
+v=spf1 include:spf.privateemail.com ~all
+```
+<img width="1255" height="535" alt="image" src="https://github.com/user-attachments/assets/af3b25bc-56ae-4678-b315-76cc3494bbc6" />
+
+4. This routes everything properly to `admin@clariolane.com` including the `aliases`
+<img width="1911" height="845" alt="image" src="https://github.com/user-attachments/assets/45187ade-75f4-48af-82c9-8a4af44790b6" />
+
+
