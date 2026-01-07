@@ -39,8 +39,8 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 const dashboardPrimaryPaths = [
-  'dashboard',
   'practice',
+  'dashboard',
   'progress',
   // 'challenges',
 ]
