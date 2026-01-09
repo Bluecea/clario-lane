@@ -119,8 +119,8 @@ as $$
 begin
   if new.onboardingcompleted = true and (old.onboardingcompleted = false or old.onboardingcompleted is null) then
       perform net.http_post(
-          url := 'https://saqtoipejkeyipxfffuv.supabase.co/functions/v1/send-email',
-          headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhcXRvaXBlamtleWlweGZmZnV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDAwNDMyNywiZXhwIjoyMDc1NTgwMzI3fQ.PZ5JjqgBxg0GeaX7qxM0TFNlrEzw1XWVDMg9bQNb3IY"}'::jsonb,
+          url := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-email',
+          headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
           body := jsonb_build_object(
               'type', 'WELCOME',
               'email', new.email,
@@ -146,8 +146,8 @@ as $$
 begin
   if new.encrypted_password <> old.encrypted_password then
       perform net.http_post(
-          url := 'https://saqtoipejkeyipxfffuv.supabase.co/functions/v1/send-email',
-          headers := '{"Content-Type": "application/json", "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhcXRvaXBlamtleWlweGZmZnV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDAwNDMyNywiZXhwIjoyMDc1NTgwMzI3fQ.PZ5JjqgBxg0GeaX7qxM0TFNlrEzw1XWVDMg9bQNb3IY"}'::jsonb,
+          url := 'https://YOUR_PROJECT_REF.supabase.co/functions/v1/send-email',
+          headers := '{"Content-Type": "application/json", "Authorization": "Bearer YOUR_SERVICE_ROLE_KEY"}'::jsonb,
           body := jsonb_build_object(
               'type', 'PASSWORD_CHANGED',
               'email', new.email, -- auth.users has email
