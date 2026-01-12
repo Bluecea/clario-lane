@@ -33,11 +33,19 @@ import { toast } from 'sonner'
 
 export const Route = createFileRoute('/onboarding/')({
   component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>): { renew?: boolean } => {
+    return {
+      renew: search.renew ? Boolean(search.renew) : undefined,
+    }
+  },
   pendingComponent: PendingPage,
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context, search }) => {
     const { user, session } = context
     if (!session) throw redirect({ to: '/auth' })
     if (!user) return context
+    // If renewing, allow access even if onboarding is completed
+    if (search.renew) return context
+
     if (user?.onboarding_completed && user.is_subscribed)
       throw redirect({ to: '/dashboard' })
   },
@@ -55,6 +63,14 @@ const paystackPop = new PaystackPop()
 function RouteComponent() {
   const { updateProfile, ...onboarding } = useOnboardingStore()
   const { current_step, total_steps, update } = useOnboardingFlow()
+  const search = Route.useSearch()
+
+  useEffect(() => {
+    if (search.renew) {
+      update({ current_step: 6 })
+    }
+  }, [search.renew, update])
+
   const progress = ((current_step + 1) / total_steps) * 100
 
   const { data: goals } = useQuery(fetchGoals)

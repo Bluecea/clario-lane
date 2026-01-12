@@ -13,7 +13,7 @@ const BASE_STYLES = `
 
 // TODO: Replace with actual hosted URL of the logo
 const LOGO_URL =
-  "https://drive.google.com/file/d/1wT4z5MPtG2s976B4-I1zQ2tHs8wzUysp/view?usp=sharing";
+  "https://clariolane-bucket.nyc3.cdn.digitaloceanspaces.com/fullBrandLogo.svg";
 
 const baseLayout = (content: string) => `
 <!DOCTYPE html>

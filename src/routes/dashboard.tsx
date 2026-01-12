@@ -1,5 +1,5 @@
 import { BackButton, Tabs, TabsList, TabsTrigger } from '@/components'
-import { useOnboardingFlow } from '@/store'
+
 import {
   createFileRoute,
   Link,
@@ -32,8 +32,7 @@ export const Route = createFileRoute('/dashboard')({
     const isSubscriptionExpired = new Date(response) < new Date()
 
     if (isSubscriptionExpired) {
-      useOnboardingFlow.setState({ current_step: 7 })
-      throw redirect({ to: '/onboarding' })
+      throw redirect({ to: '/onboarding', search: { renew: true } })
     }
   },
 })
