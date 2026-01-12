@@ -26,12 +26,13 @@ export const Route = createFileRoute('/dashboard')({
     if (!user || !user?.onboarding_completed)
       throw redirect({ to: '/onboarding' })
 
+    if (user.is_subscribed) return
+
     const response = await queryClient.fetchQuery(fetchNextSubscriptionDate)
 
-    const subscriptionDate = new Date(response)
+    const nextSubscriptionDate = new Date(response)
     const currentDate = new Date()
-    const isSubscriptionExpired = subscriptionDate < currentDate
-    console.log({ isSubscriptionExpired, subscriptionDate, currentDate })
+    const isSubscriptionExpired = nextSubscriptionDate < currentDate
     if (isSubscriptionExpired) {
       throw redirect({ to: '/pricing' })
     }
